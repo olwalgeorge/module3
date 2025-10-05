@@ -253,6 +253,68 @@ export default function ProductList() {
     return allVariants.filter(variant => variant.product_id === productId);
   };
 
+  const getProductImage = (product: any) => {
+    // Product should have its own base image
+    if (product.image_url) {
+      return product.image_url;
+    }
+    // Fallback based on product type
+    if (product.name?.toLowerCase().includes('macbook') || product.name?.toLowerCase().includes('laptop')) {
+      return 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=300&fit=crop';
+    }
+    if (product.name?.toLowerCase().includes('iphone') || product.name?.toLowerCase().includes('phone')) {
+      return 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=300&fit=crop';
+    }
+    if (product.name?.toLowerCase().includes('monitor') || product.name?.toLowerCase().includes('display')) {
+      return 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=300&fit=crop';
+    }
+    if (product.name?.toLowerCase().includes('mouse')) {
+      return 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop';
+    }
+    if (product.name?.toLowerCase().includes('keyboard')) {
+      return 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop';
+    }
+    return 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop';
+  };
+
+  const getVariantImage = (variant: any, parentProduct: any) => {
+    // First priority: variant's own image
+    if (variant.image_url) {
+      return variant.image_url;
+    }
+    // Second priority: inherit from parent product
+    if (parentProduct?.image_url) {
+      return parentProduct.image_url;
+    }
+    // Fallback: generate variant-specific image based on variant attributes
+    const variantName = variant.variant_name?.toLowerCase() || '';
+    const variantValue = variant.variant_value?.toLowerCase() || '';
+    
+    // Color-specific images for variants
+    if (variantName.includes('color')) {
+      if (variantValue.includes('silver') || variantValue.includes('white')) {
+        return 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=300&fit=crop';
+      }
+      if (variantValue.includes('space') || variantValue.includes('gray') || variantValue.includes('black')) {
+        return 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop';
+      }
+      if (variantValue.includes('blue')) {
+        return 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop';
+      }
+      if (variantValue.includes('red')) {
+        return 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400&h=300&fit=crop';
+      }
+    }
+    
+    // Storage-specific or size-specific variants might use different angles
+    if (variantName.includes('storage') || variantName.includes('size')) {
+      return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop';
+    }
+    
+    // Default: use parent product image logic
+    return getProductImage(parentProduct);
+  };
+
   const getProductLocations = (sku: string) => {
     return locations.filter(location => location.productSku === sku);
   };
@@ -391,7 +453,7 @@ export default function ProductList() {
                               <i className={`ri-arrow-${isExpanded ? 'down' : 'right'}-s-line`}></i>
                             </button>
                             <img 
-                              src={product.image_url || product.image || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop'} 
+                              src={getProductImage(product)} 
                               alt={product.name}
                               className="w-12 h-12 rounded-lg object-cover object-top mr-4"
                             />
@@ -469,7 +531,7 @@ export default function ProductList() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center pl-8">
                                 <img 
-                                  src={variant.products?.image_url || product.image_url || 'https://via.placeholder.com/40'} 
+                                  src={getVariantImage(variant, product)} 
                                   alt={variant.variant_name}
                                   className="w-10 h-10 rounded-lg object-cover object-top mr-3"
                                 />
@@ -567,7 +629,7 @@ export default function ProductList() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <img 
-                            src={variant.products?.image_url || parentProduct?.image_url || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop'}
+                            src={getVariantImage(variant, parentProduct)}
                             alt={variant.variant_name}
                             className="w-12 h-12 rounded-lg object-cover object-top mr-4"
                           />
@@ -1135,7 +1197,7 @@ export default function ProductList() {
                 <div key={variant.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                   <div className="flex items-center justify-between mb-3">
                     <img 
-                      src={variant.products?.image_url || selectedProduct.image_url || 'https://via.placeholder.com/48'}
+                      src={getVariantImage(variant, selectedProduct)}
                       alt={variant.variant_name}
                       className="w-12 h-12 rounded-lg object-cover object-top"
                     />
