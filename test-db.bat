@@ -36,8 +36,8 @@ if not exist "node_modules" (
 if not exist ".env.local" (
     echo Warning: .env.local file not found
     echo Creating sample environment file...
-    echo VITE_SUPABASE_URL=https://xxgpfxkokhuqoooqakkd.supabase.co > .env.local
-    echo VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4Z3BmeGtva2h1cW9vb3Fha2tkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NjczNTEsImV4cCI6MjA3NTI0MzM1MX0.T9AmS12oaTWimda83HmaxBEEQLpbHcTH4QeWAggA_iU >> .env.local
+    echo VITE_SUPABASE_URL=https://your-project-id.supabase.co > .env.local
+    echo VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here >> .env.local
     echo Created .env.local with default values
     echo.
 )

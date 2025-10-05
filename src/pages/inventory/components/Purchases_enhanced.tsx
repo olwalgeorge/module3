@@ -24,205 +24,17 @@ export default function Purchases() {
         .select('*')
         .order('order_date', { ascending: false });
 
-      if (error) {
-        // If table doesn't exist, use mock data for now
-        if (error.message.includes('Could not find the table')) {
-          console.log('📝 Purchases table not found, using mock data...');
-          setError(null);
-          setPurchases(getMockPurchases());
-        } else {
-          throw error;
-        }
-      } else {
-        setPurchases(data || []);
-      }
+      if (error) throw error;
+      setPurchases(data || []);
     } catch (err: any) {
-      console.error('Error fetching purchases:', err);
       setError(err.message);
-      // Fallback to mock data on any error
-      setPurchases(getMockPurchases());
     } finally {
       setLoading(false);
     }
   };
 
-  // Mock purchases data that matches our enhanced structure
-  const getMockPurchases = () => [
-    {
-      id: '660e8400-e29b-41d4-a716-446655440001',
-      purchase_order_number: 'PO-2024-001',
-      supplier_name: 'TechCorp Ltd Enhanced',
-      status: 'delivered',
-      total_amount: 15750.00,
-      tax_amount: 1417.50,
-      shipping_cost: 125.00,
-      discount_amount: 787.50,
-      currency: 'USD',
-      payment_method: 'Bank Transfer',
-      order_date: '2024-01-15T10:30:00Z',
-      expected_delivery_date: '2024-01-22T17:00:00Z',
-      actual_delivery_date: '2024-01-21T14:30:00Z',
-      warehouse_name: 'Main Warehouse',
-      items: JSON.stringify([
-        {
-          product_name: 'MacBook Pro 16"',
-          sku: 'MBP-16-001',
-          quantity: 10,
-          unit_cost: 1299.99,
-          total_cost: 12999.90,
-          specifications: { color: 'Space Gray', storage: '512GB', memory: '16GB' }
-        },
-        {
-          product_name: 'Wireless Mouse',
-          sku: 'WM-001',
-          quantity: 25,
-          unit_cost: 49.99,
-          total_cost: 1249.75,
-          specifications: { type: 'Bluetooth', dpi: '1600', battery: 'Rechargeable' }
-        }
-      ]),
-      notes: JSON.stringify({
-        category: 'Electronics',
-        priority: 'high',
-        business_unit: 'IT Department',
-        approval_workflow: {
-          requested_by: 'John Smith',
-          approved_by: 'Sarah Johnson'
-        },
-        vendor_performance: {
-          delivery_rating: 5,
-          quality_rating: 5,
-          communication_rating: 4
-        },
-        logistics: {
-          carrier: 'DHL Express',
-          tracking_number: 'TRK-TC-240115-001'
-        }
-      })
-    },
-    {
-      id: '660e8400-e29b-41d4-a716-446655440002',
-      purchase_order_number: 'PO-2024-002',
-      supplier_name: 'Global Supplies Inc Enhanced',
-      status: 'pending',
-      total_amount: 8925.00,
-      tax_amount: 803.25,
-      shipping_cost: 75.00,
-      discount_amount: 446.25,
-      currency: 'USD',
-      payment_method: 'Credit Card',
-      order_date: '2024-01-18T14:15:00Z',
-      expected_delivery_date: '2024-01-25T17:00:00Z',
-      actual_delivery_date: null,
-      warehouse_name: 'Secondary Warehouse',
-      items: JSON.stringify([
-        {
-          product_name: 'Office Desk',
-          sku: 'OD-001',
-          quantity: 12,
-          unit_cost: 299.99,
-          total_cost: 3599.88,
-          specifications: { material: 'Oak Wood', dimensions: '150x75x75cm' }
-        },
-        {
-          product_name: 'Ergonomic Office Chair',
-          sku: 'EOC-001',
-          quantity: 12,
-          unit_cost: 199.99,
-          total_cost: 2399.88,
-          specifications: { material: 'Mesh', lumbar_support: true }
-        }
-      ]),
-      notes: JSON.stringify({
-        category: 'Office Furniture',
-        priority: 'medium',
-        business_unit: 'Human Resources',
-        approval_workflow: {
-          requested_by: 'Emily Davis',
-          approved_by: 'Robert Taylor'
-        },
-        logistics: {
-          carrier: 'UPS Freight',
-          tracking_number: 'TRK-GS-240118-002'
-        }
-      })
-    },
-    {
-      id: '660e8400-e29b-41d4-a716-446655440003',
-      purchase_order_number: 'PO-2024-003',
-      supplier_name: 'Premium Electronics Enhanced',
-      status: 'in_transit',
-      total_amount: 24680.00,
-      tax_amount: 2221.20,
-      shipping_cost: 200.00,
-      discount_amount: 1234.00,
-      currency: 'USD',
-      payment_method: 'Bank Transfer',
-      order_date: '2024-01-20T09:45:00Z',
-      expected_delivery_date: '2024-01-30T17:00:00Z',
-      actual_delivery_date: null,
-      warehouse_name: 'Main Warehouse',
-      items: JSON.stringify([
-        {
-          product_name: 'Gaming Desktop PC',
-          sku: 'GDP-001',
-          quantity: 8,
-          unit_cost: 1899.99,
-          total_cost: 15199.92,
-          specifications: { cpu: 'Intel i7-13700K', gpu: 'RTX 4070', ram: '32GB DDR5' }
-        },
-        {
-          product_name: '4K Gaming Monitor',
-          sku: '4KGM-001',
-          quantity: 8,
-          unit_cost: 599.99,
-          total_cost: 4799.92,
-          specifications: { size: '27 inch', resolution: '3840x2160', refresh_rate: '144Hz' }
-        }
-      ]),
-      notes: JSON.stringify({
-        category: 'Gaming Equipment',
-        priority: 'high',
-        business_unit: 'Development Team',
-        approval_workflow: {
-          requested_by: 'Alex Thompson',
-          approved_by: 'David Kim'
-        },
-        vendor_performance: {
-          quality_rating: 5,
-          communication_rating: 5,
-          premium_supplier: true
-        },
-        logistics: {
-          carrier: 'FedEx Priority',
-          tracking_number: 'TRK-PE-240120-003'
-        }
-      })
-    }
-  ];
-
   if (loading) return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div></div>;
-  
-  // Show database setup notice if using mock data
-  const usingMockData = error === null && purchases.length > 0 && purchases[0].id?.includes('660e8400');
-  
-  if (error) return (
-    <div className="text-red-600 text-center p-4">
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-red-800 mb-2">Database Error</h3>
-        <p className="text-red-700 mb-4">Error: {error}</p>
-        <div className="bg-white border border-red-200 rounded p-4 text-left">
-          <h4 className="font-semibold text-red-800 mb-2">To fix this:</h4>
-          <ol className="list-decimal list-inside text-sm text-red-700 space-y-1">
-            <li>Open your Supabase project dashboard</li>
-            <li>Go to SQL Editor</li>
-            <li>Run the SQL script from: <code className="bg-red-100 px-1 rounded">create-purchases-table.sql</code></li>
-            <li>Then run: <code className="bg-red-100 px-1 rounded">node seed-purchases-database.js</code></li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  );
+  if (error) return <div className="text-red-600 text-center p-4">Error: {error}</div>;
 
   // Filter purchases
   const filteredPurchases = purchases.filter(purchase => {
@@ -278,26 +90,6 @@ export default function Purchases() {
 
   return (
     <div className="space-y-6">
-      {/* Database Setup Notice */}
-      {usingMockData && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800">Using Mock Data</h3>
-              <p className="mt-1 text-sm text-blue-700">
-                The purchases table hasn't been created yet. Using sample data for demonstration. 
-                Run the SQL script in <code className="bg-blue-100 px-1 rounded">create-purchases-table.sql</code> to set up the database.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white rounded-lg shadow p-6">

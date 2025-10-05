@@ -51,18 +51,20 @@ export default function Orders() {
   const { formatCurrency, convertCurrency, displayCurrency, availableCurrencies } = useCurrency();
 
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.order_number.toString().includes(searchTerm);
+    const matchesSearch = (order.customer_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (order.order_number || '').toString().includes(searchTerm);
     const matchesStatus = selectedStatus === 'all' || order.status === selectedStatus;
     
     // Filter by warehouse if selected
     let matchesWarehouse = true;
     if (selectedWarehouse !== 'all') {
       // Check if any order items are from the selected warehouse
-      matchesWarehouse = order.items.some((item: any) => {
-        const productLocations = locations.filter(l => l.productName === item.productName);
-        return productLocations.some(l => l.warehouseId.toString() === selectedWarehouse);
-      });
+      const orderData = JSON.parse(order.notes || '{}');
+      if (orderData.items) {
+        matchesWarehouse = orderData.items.some((item: any) => {
+          return item.warehouse && item.warehouse.includes(selectedWarehouse);
+        });
+      }
     }
     
     return matchesSearch && matchesStatus && matchesWarehouse;
@@ -97,13 +99,14 @@ export default function Orders() {
 
   const handleEditOrder = (order: any) => {
     setSelectedOrder(order);
+    const orderData = JSON.parse(order.notes || '{}');
     setNewOrder({
-      customerName: order.customerName,
-      customerEmail: order.customerEmail || '',
-      customerPhone: order.customerPhone || '',
-      shippingAddress: order.shippingAddress || '',
-      status: order.status,
-      items: order.items
+      customerName: order.customer_name || '',
+      customerEmail: order.customer_email || '',
+      customerPhone: orderData.customerPhone || '',
+      shippingAddress: orderData.shippingAddress || '',
+      status: order.status || 'pending',
+      items: orderData.items || [{ productName: '', quantity: 1, price: 0 }]
     });
     setIsEditModalOpen(true);
   };
@@ -390,39 +393,47 @@ export default function Orders() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredOrders.map((order) => {
+                // Parse order metadata from notes field
+                const orderData = JSON.parse(order.notes || '{}');
                 const orderWarehouses = new Set();
-                order.items.forEach((item: any) => {
-                  const itemLocations = locations.filter(l => l.productName === item.productName);
-                  itemLocations.forEach(l => {
-                    const warehouse = warehouses.find(w => w.id === l.warehouseId);
-                    if (warehouse) orderWarehouses.add(warehouse.name);
-                  });
-                });
                 
-                const convertedTotal = convertCurrency(order.total, order.currency, displayCurrency);
+                // Extract warehouses from items in notes
+                if (orderData.items) {
+                  orderData.items.forEach((item: any) => {
+                    if (item.warehouse) {
+                      orderWarehouses.add(item.warehouse);
+                    }
+                  });
+                }
+                
+                // Get currency from metadata or default to USD
+                const orderCurrency = orderData.currency || 'USD';
+                const convertedTotal = convertCurrency(order.total_amount || 0, orderCurrency, displayCurrency);
                 
                 return (
                   <tr key={order.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">#{order.order_number}</div>
+                      <div className="text-sm font-medium text-gray-900">#{order.order_number || 'N/A'}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
                           <span className="text-white text-sm font-medium">
-                            {order.customer_name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
+                            {(order.customer_name || 'N/A').split(' ').map((n: string) => n[0] || '').join('').slice(0, 2)}
                           </span>
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{order.customer_name}</div>
-                          <div className="text-sm text-gray-500">{order.customer_email}</div>
+                          <div className="text-sm font-medium text-gray-900">{order.customer_name || 'N/A'}</div>
+                          <div className="text-sm text-gray-500">{order.customer_email || 'N/A'}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">Order Items</div>
+                      <div className="text-sm text-gray-900">
+                        {orderData.items ? `${orderData.items.length} items` : 'Order Items'}
+                      </div>
                       <div className="text-sm text-gray-500">
-                        {formatCurrency(order.total_amount)}
+                        {formatCurrency(order.total_amount || 0)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -430,34 +441,34 @@ export default function Orders() {
                         {orderWarehouses.size} warehouse{orderWarehouses.size !== 1 ? 's' : ''}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {Array.from(orderWarehouses).slice(0, 2).join(', ')}
+                        {Array.from(orderWarehouses).slice(0, 2).join(', ') || 'N/A'}
                         {orderWarehouses.size > 2 && ` +${orderWarehouses.size - 2} more`}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{formatCurrency(convertedTotal)}</div>
-                      {order.currency !== displayCurrency && (
+                      {orderCurrency !== displayCurrency && (
                         <div className="text-xs text-gray-500">
-                          {formatCurrency(order.total, order.currency)} {order.currency}
+                          {formatCurrency(order.total_amount || 0, orderCurrency)} {orderCurrency}
                         </div>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {order.currency}
+                        {orderCurrency}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                        <i className={`${getStatusIcon(order.status)} mr-1`}></i>
-                        {order.status}
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status || 'pending')}`}>
+                        <i className={`${getStatusIcon(order.status || 'pending')} mr-1`}></i>
+                        {order.status || 'pending'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(order.orderDate).toLocaleDateString()}
+                      {order.order_date ? new Date(order.order_date).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(order.deliveryDate).toLocaleDateString()}
+                      {order.expected_delivery ? new Date(order.expected_delivery).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">

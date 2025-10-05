@@ -8,7 +8,7 @@ echo This script will guide you through setting up your database.
 echo.
 echo 📋 STEP 1: Execute Database Schema
 echo ------------------------------------
-echo 1. Open your browser to: https://supabase.com/dashboard/project/xxgpfxkokhuqoooqakkd
+echo 1. Open your browser to: https://supabase.com/dashboard/project/[your-project-id]
 echo 2. Click "SQL Editor" in the left sidebar
 echo 3. Open this file in VS Code: database\schema.sql
 echo 4. Copy ALL the contents (Ctrl+A, Ctrl+C)

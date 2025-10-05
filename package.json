@@ -15,7 +15,14 @@
     "clean": "rm -rf node_modules package-lock.json dist",
     "setup": "npm install",
     "docs": "echo 'Documentation available in root directory'",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "db:seed-all": "cd database && node seed-all.js",
+    "db:seed-categories": "cd database && node seed-categories.js",
+    "db:seed-suppliers": "cd database && node seed-suppliers.js",
+    "db:seed-orders": "cd database && node seed-orders.js",
+    "db:seed-purchases": "cd database && node seed-purchases.js",
+    "db:seed-stock": "cd database && node seed-stock-movements.js",
+    "db:seed-crm": "cd database && node seed-crm.js"
   },
   "keywords": [
     "cse310",

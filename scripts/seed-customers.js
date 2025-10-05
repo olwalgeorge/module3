@@ -2,9 +2,19 @@
 // Seeds the database with customer data from mock data
 
 import { createClient } from '@supabase/supabase-js'
+import dotenv from 'dotenv'
 
-const supabaseUrl = 'https://ctlcpcgjnozjdskbgsul.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0bGNwY2dqbm96amRza2Jnc3VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzNjUzNTQsImV4cCI6MjA0ODk0MTM1NH0.HwOaDvjCpkwbDz1zcR5XDKE8bAG8jE8N3m2ZS0lhfU8'
+// Load environment variables
+dotenv.config()
+
+const supabaseUrl = process.env.VITE_SUPABASE_URL
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Missing Supabase configuration!')
+  console.error('Please ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set in your .env file')
+  process.exit(1)
+}
 
 const supabase = createClient(supabaseUrl, supabaseKey)
 

@@ -23,7 +23,7 @@ node scripts/test-database.js
 
 1. **Go to Supabase Dashboard**
    - Visit: https://supabase.com/dashboard
-   - Navigate to your project: https://supabase.com/dashboard/project/xxgpfxkokhuqoooqakkd
+   - Navigate to your project: https://supabase.com/dashboard/project/[your-project-id]
 
 2. **Execute Schema (if not done)**
    - Go to SQL Editor
@@ -40,8 +40,8 @@ node scripts/test-database.js
 
 Ensure your `.env.local` file exists with:
 ```env
-VITE_SUPABASE_URL=https://xxgpfxkokhuqoooqakkd.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4Z3BmeGtva2h1cW9vb3Fha2tkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NjczNTEsImV4cCI6MjA3NTI0MzM1MX0.T9AmS12oaTWimda83HmaxBEEQLpbHcTH4QeWAggA_iU
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ```
 
 ### Step 3: Database Validation

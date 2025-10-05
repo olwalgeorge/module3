@@ -4,7 +4,7 @@
 
 To add product variants to your existing database:
 
-1. **Go to Supabase SQL Editor**: https://supabase.com/dashboard/project/xxgpfxkokhuqoooqakkd
+1. **Go to Supabase SQL Editor**: https://supabase.com/dashboard/project/[your-project-id]
 2. **Click "SQL Editor"** in the sidebar
 3. **Copy the entire contents** of `add-variants.sql`
 4. **Paste and click "Run"**

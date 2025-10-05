@@ -206,3 +206,19 @@ run_image_download.bat
 # Image download logs
 image_download_log.json
 .vercel
+
+# Database utility files with potential credentials
+complete-setup.js
+fix-supplier-json.js
+seed-enhanced-orders.js
+test-basic-orders.js
+test-*.js
+setup-*.js
+check-*.js
+verify-*.js
+cleanup-*.js
+
+# Legacy/test files that may contain credentials
+*-old.*
+*-enhanced.*
+*-backup.*

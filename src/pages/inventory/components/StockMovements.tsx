@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useStockMovements } from '../../../hooks/useDatabase';
-import { warehouses, locations } from '../../../mocks/inventory';
+import { warehouses } from '../../../mocks/inventory';
 import Button from '../../../components/base/Button';
 import Input from '../../../components/base/Input';
 import Modal from '../../../components/base/Modal';
@@ -16,69 +16,71 @@ export default function StockMovements() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState('all');
 
-  const filteredMovements = stockMovements.filter(movement => {
-    const matchesSearch = movement.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         movement.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         movement.reference.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = selectedType === 'all' || movement.type === selectedType;
-    
-    // Filter by warehouse if selected
-    let matchesWarehouse = true;
-    if (selectedWarehouse !== 'all') {
-      const productLocations = locations.filter(l => l.productSku === movement.sku);
-      matchesWarehouse = productLocations.some(l => l.warehouseId.toString() === selectedWarehouse);
+  // Helper function to parse movement notes JSON safely
+  const parseMovementNotes = (notes: string | null) => {
+    if (!notes) return {};
+    try {
+      return JSON.parse(notes);
+    } catch {
+      return {};
     }
+  };
+
+  const filteredMovements = stockMovements.filter(movement => {
+    const productName = movement.products?.name || 'Unknown Product';
+    const sku = movement.products?.sku || '';
+    
+    const matchesSearch = 
+      productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (movement.reference_id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (movement.reason || '').toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesType = selectedType === 'all' || movement.reference_type === selectedType.toLowerCase();
+    
+    // For now, skip warehouse filtering since we'd need warehouse/location data
+    const matchesWarehouse = true;
     
     return matchesSearch && matchesType && matchesWarehouse;
   });
 
   const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'Purchase': return 'bg-green-100 text-green-800';
-      case 'Sale': return 'bg-blue-100 text-blue-800';
-      case 'Adjustment': return 'bg-yellow-100 text-yellow-800';
-      case 'Transfer': return 'bg-purple-100 text-purple-800';
-      case 'Return': return 'bg-orange-100 text-orange-800';
+    switch (type?.toLowerCase()) {
+      case 'purchase': return 'bg-green-100 text-green-800';
+      case 'sale': return 'bg-blue-100 text-blue-800';
+      case 'adjustment': return 'bg-yellow-100 text-yellow-800';
+      case 'transfer': return 'bg-purple-100 text-purple-800';
+      case 'return': return 'bg-orange-100 text-orange-800';
+      case 'assembly': return 'bg-indigo-100 text-indigo-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'Purchase': return 'ri-add-circle-line';
-      case 'Sale': return 'ri-subtract-line';
-      case 'Adjustment': return 'ri-edit-line';
-      case 'Transfer': return 'ri-arrow-left-right-line';
-      case 'Return': return 'ri-arrow-go-back-line';
+    switch (type?.toLowerCase()) {
+      case 'purchase': return 'ri-add-circle-line';
+      case 'sale': return 'ri-subtract-line';
+      case 'adjustment': return 'ri-edit-line';
+      case 'transfer': return 'ri-arrow-left-right-line';
+      case 'return': return 'ri-arrow-go-back-line';
+      case 'assembly': return 'ri-tools-line';
       default: return 'ri-file-list-line';
     }
   };
 
-  const formatQuantity = (quantity: number, type: string) => {
-    const sign = ['Purchase', 'Return', 'Adjustment'].includes(type) && quantity > 0 ? '+' : '';
-    return `${sign}${quantity}`;
+  const formatQuantity = (quantity: number, movementType: string) => {
+    const sign = movementType === 'in' ? '+' : '-';
+    return `${sign}${Math.abs(quantity)}`;
   };
 
-  const getProductLocations = (sku: string) => {
-    return locations.filter(l => l.productSku === sku);
-  };
-
-  const getWarehouseInfo = (sku: string) => {
-    const productLocations = getProductLocations(sku);
-    if (productLocations.length === 0) return null;
-    
-    const warehouseIds = [...new Set(productLocations.map(l => l.warehouseId))];
-    const warehouseNames = warehouseIds.map(id => {
-      const warehouse = warehouses.find(w => w.id === id);
-      return warehouse ? warehouse.name : 'Unknown';
-    });
-    
-    return {
-      warehouses: warehouseNames,
-      locations: productLocations.length,
-      primaryWarehouse: warehouseNames[0]
-    };
-  };
+  // Calculate statistics from database movements
+  const totalMovements = stockMovements.length;
+  const inboundMovements = stockMovements.filter(m => m.movement_type === 'in').length;
+  const outboundMovements = stockMovements.filter(m => m.movement_type === 'out').length;
+  const totalValue = stockMovements.reduce((sum, movement) => {
+    const notes = parseMovementNotes(movement.notes);
+    return sum + (notes.total_cost || notes.total_revenue || 0);
+  }, 0);
 
   return (
     <div className="p-6 space-y-6">
@@ -99,8 +101,8 @@ export default function StockMovements() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Today's Movements</p>
-              <p className="text-2xl font-bold text-gray-900 mt-2">24</p>
+              <p className="text-sm font-medium text-gray-600">Total Movements</p>
+              <p className="text-2xl font-bold text-gray-900 mt-2">{totalMovements}</p>
             </div>
             <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
               <i className="ri-arrow-up-down-line text-white text-xl"></i>
@@ -112,7 +114,7 @@ export default function StockMovements() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Stock In</p>
-              <p className="text-2xl font-bold text-green-600 mt-2">+156</p>
+              <p className="text-2xl font-bold text-green-600 mt-2">{inboundMovements}</p>
             </div>
             <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
               <i className="ri-add-circle-line text-white text-xl"></i>
@@ -124,7 +126,7 @@ export default function StockMovements() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Stock Out</p>
-              <p className="text-2xl font-bold text-red-600 mt-2">-89</p>
+              <p className="text-2xl font-bold text-red-600 mt-2">{outboundMovements}</p>
             </div>
             <div className="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center">
               <i className="ri-subtract-line text-white text-xl"></i>
@@ -135,11 +137,11 @@ export default function StockMovements() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Net Change</p>
-              <p className="text-2xl font-bold text-blue-600 mt-2">+67</p>
+              <p className="text-sm font-medium text-gray-600">Total Value</p>
+              <p className="text-2xl font-bold text-purple-600 mt-2">${Math.round(totalValue).toLocaleString()}</p>
             </div>
-            <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-              <i className="ri-bar-chart-line text-white text-xl"></i>
+            <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
+              <i className="ri-money-dollar-circle-line text-white text-xl"></i>
             </div>
           </div>
         </div>
@@ -161,11 +163,12 @@ export default function StockMovements() {
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"
             >
               <option value="all">All Types</option>
-              <option value="Purchase">Purchase</option>
-              <option value="Sale">Sale</option>
-              <option value="Adjustment">Adjustment</option>
-              <option value="Transfer">Transfer</option>
-              <option value="Return">Return</option>
+              <option value="purchase">Purchase</option>
+              <option value="sale">Sale</option>
+              <option value="adjustment">Adjustment</option>
+              <option value="transfer">Transfer</option>
+              <option value="return">Return</option>
+              <option value="assembly">Assembly</option>
             </select>
           </div>
 
@@ -223,68 +226,85 @@ export default function StockMovements() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredMovements.map((movement) => {
-                const warehouseInfo = getWarehouseInfo(movement.sku);
+                const notes = parseMovementNotes(movement.notes);
+                const productName = movement.products?.name || 'Unknown Product';
+                const productSku = movement.products?.sku || 'N/A';
+                const productImage = movement.products?.image_url || '/api/placeholder/40/40';
+                const movementDate = new Date(movement.created_at);
                 
                 return (
                   <tr key={movement.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{movement.date}</div>
-                      <div className="text-xs text-gray-500">{movement.time}</div>
+                      <div className="text-sm text-gray-900">{movementDate.toLocaleDateString()}</div>
+                      <div className="text-xs text-gray-500">{movementDate.toLocaleTimeString()}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <img 
-                          src={movement.productImage} 
-                          alt={movement.productName}
+                          src={productImage} 
+                          alt={productName}
                           className="w-10 h-10 rounded-lg object-cover object-top mr-3"
                         />
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{movement.productName}</div>
-                          <div className="text-xs text-gray-500">SKU: {movement.sku}</div>
+                          <div className="text-sm font-medium text-gray-900">{productName}</div>
+                          <div className="text-xs text-gray-500">SKU: {productSku}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {warehouseInfo ? (
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {warehouseInfo.primaryWarehouse}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {warehouseInfo.locations} location{warehouseInfo.locations !== 1 ? 's' : ''}
-                            {warehouseInfo.warehouses.length > 1 && 
-                              ` • +${warehouseInfo.warehouses.length - 1} warehouse${warehouseInfo.warehouses.length > 2 ? 's' : ''}`
-                            }
-                          </div>
+                      <div className="text-sm text-gray-900">
+                        {notes.location || notes.from_warehouse || 'Unknown Location'}
+                      </div>
+                      {notes.to_warehouse && (
+                        <div className="text-xs text-gray-500">
+                          → {notes.to_warehouse}
                         </div>
-                      ) : (
-                        <div className="text-sm text-gray-500">No location data</div>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-2 ${getTypeColor(movement.type)}`}>
-                          <i className={`${getTypeIcon(movement.type)} text-sm`}></i>
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-2 ${getTypeColor(movement.reference_type)}`}>
+                          <i className={`${getTypeIcon(movement.reference_type)} text-sm`}></i>
                         </div>
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTypeColor(movement.type)}`}>
-                          {movement.type}
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTypeColor(movement.reference_type)}`}>
+                          {movement.reference_type}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className={`text-sm font-medium ${
-                        movement.quantity > 0 ? 'text-green-600' : 'text-red-600'
+                        movement.movement_type === 'in' ? 'text-green-600' : 'text-red-600'
                       }`}>
-                        {formatQuantity(movement.quantity, movement.type)}
+                        {formatQuantity(movement.quantity, movement.movement_type)}
                       </div>
-                      <div className="text-xs text-gray-500">Balance: {movement.balanceAfter}</div>
+                      {notes.unit_cost && (
+                        <div className="text-xs text-gray-500">
+                          @ ${notes.unit_cost}/unit
+                        </div>
+                      )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{movement.reference}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{movement.user}</div>
+                      <div className="text-sm text-gray-900">{movement.reference_id}</div>
+                      {notes.order_number && (
+                        <div className="text-xs text-gray-500">{notes.order_number}</div>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500 max-w-xs truncate">{movement.notes}</div>
+                      <div className="text-sm text-gray-900">{movement.created_by}</div>
+                      {notes.approved_by && (
+                        <div className="text-xs text-gray-500">Approved by: {notes.approved_by}</div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500 max-w-xs truncate">
+                        {movement.reason}
+                      </div>
+                      {notes.supplier && (
+                        <div className="text-xs text-blue-600">{notes.supplier}</div>
+                      )}
+                      {notes.customer && (
+                        <div className="text-xs text-green-600">{notes.customer}</div>
+                      )}
                     </td>
                   </tr>
                 );

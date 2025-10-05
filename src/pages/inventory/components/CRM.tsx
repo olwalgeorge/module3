@@ -281,19 +281,19 @@ function CustomersTab({ searchTerm, selectedFilter, onView, customers, loading }
   });
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Active': return 'bg-green-100 text-green-800';
-      case 'Inactive': return 'bg-gray-100 text-gray-800';
-      case 'Prospect': return 'bg-blue-100 text-blue-800';
+    switch (status?.toLowerCase()) {
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'inactive': return 'bg-gray-100 text-gray-800';
+      case 'prospect': return 'bg-blue-100 text-blue-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'High': return 'bg-red-100 text-red-800';
-      case 'Medium': return 'bg-yellow-100 text-yellow-800';
-      case 'Low': return 'bg-green-100 text-green-800';
+    switch (priority?.toLowerCase()) {
+      case 'high': return 'bg-red-100 text-red-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'low': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -319,29 +319,29 @@ function CustomersTab({ searchTerm, selectedFilter, onView, customers, loading }
               <td className="px-4 py-3">
                 <div className="flex items-center">
                   <img 
-                    src={customer.avatar} 
+                    src={customer.avatar || 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=150&h=150&fit=crop&crop=face'} 
                     alt={customer.name}
                     className="w-10 h-10 rounded-full object-cover object-top mr-3"
                   />
                   <div>
                     <div className="text-sm font-medium text-gray-900">{customer.name}</div>
-                    <div className="text-xs text-gray-500">{customer.position}</div>
+                    <div className="text-xs text-gray-500">{customer.position || 'N/A'}</div>
                   </div>
                 </div>
               </td>
               <td className="px-4 py-3">
                 <div className="text-sm text-gray-900">{customer.company}</div>
-                <div className="text-xs text-gray-500">{customer.industry}</div>
+                <div className="text-xs text-gray-500">{customer.industry || 'N/A'}</div>
               </td>
               <td className="px-4 py-3">
                 <div className="text-sm text-gray-900">{customer.email}</div>
                 <div className="text-xs text-gray-500">{customer.phone}</div>
               </td>
-              <td className="px-4 py-3 text-sm text-gray-900">{customer.totalOrders}</td>
-              <td className="px-4 py-3 text-sm font-medium text-gray-900">${customer.totalValue.toLocaleString()}</td>
+              <td className="px-4 py-3 text-sm text-gray-900">{customer.totalOrders || 0}</td>
+              <td className="px-4 py-3 text-sm font-medium text-gray-900">${(customer.totalValue || 0).toLocaleString()}</td>
               <td className="px-4 py-3">
-                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(customer.priority)}`}>
-                  {customer.priority}
+                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(customer.priority || 'Low')}`}>
+                  {customer.priority || 'Low'}
                 </span>
               </td>
               <td className="px-4 py-3">
@@ -814,15 +814,15 @@ function DetailView({ item, type }: any) {
       <div className="space-y-6">
         <div className="flex items-center space-x-4">
           <img 
-            src={item.avatar} 
+            src={item.avatar || 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=150&h=150&fit=crop&crop=face'} 
             alt={item.name}
             className="w-16 h-16 rounded-full object-cover object-top"
           />
           <div>
             <h3 className="text-xl font-semibold text-gray-900">{item.name}</h3>
-            <p className="text-gray-600">{item.position} at {item.company}</p>
+            <p className="text-gray-600">{item.position || 'N/A'} at {item.company}</p>
             <div className="flex space-x-2 mt-2">
-              {item.tags.map((tag: string) => (
+              {(item.tags || ['Standard']).map((tag: string) => (
                 <span key={tag} className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
                   {tag}
                 </span>
@@ -837,7 +837,7 @@ function DetailView({ item, type }: any) {
             <div className="space-y-2 text-sm">
               <p><span className="text-gray-600">Email:</span> {item.email}</p>
               <p><span className="text-gray-600">Phone:</span> {item.phone}</p>
-              <p><span className="text-gray-600">Website:</span> {item.website}</p>
+              <p><span className="text-gray-600">Website:</span> {item.website || 'N/A'}</p>
               <p><span className="text-gray-600">Address:</span> {item.address}</p>
             </div>
           </div>
@@ -845,29 +845,29 @@ function DetailView({ item, type }: any) {
           <div>
             <h4 className="text-sm font-medium text-gray-900 mb-3">Business Information</h4>
             <div className="space-y-2 text-sm">
-              <p><span className="text-gray-600">Industry:</span> {item.industry}</p>
-              <p><span className="text-gray-600">Customer Type:</span> {item.customerType}</p>
-              <p><span className="text-gray-600">Source:</span> {item.source}</p>
-              <p><span className="text-gray-600">Assigned To:</span> {item.assignedTo}</p>
+              <p><span className="text-gray-600">Industry:</span> {item.industry || 'N/A'}</p>
+              <p><span className="text-gray-600">Customer Type:</span> {item.customerType || 'N/A'}</p>
+              <p><span className="text-gray-600">Source:</span> {item.source || 'N/A'}</p>
+              <p><span className="text-gray-600">Assigned To:</span> {item.assignedTo || 'N/A'}</p>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-blue-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-blue-600">{item.totalOrders}</div>
+            <div className="text-2xl font-bold text-blue-600">{item.totalOrders || 0}</div>
             <div className="text-sm text-blue-600">Total Orders</div>
           </div>
           <div className="bg-green-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-green-600">${item.totalValue.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-green-600">${(item.totalValue || 0).toLocaleString()}</div>
             <div className="text-sm text-green-600">Total Value</div>
           </div>
           <div className="bg-purple-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-purple-600">{new Date(item.lastOrderDate).toLocaleDateString()}</div>
+            <div className="text-2xl font-bold text-purple-600">{item.lastOrderDate ? new Date(item.lastOrderDate).toLocaleDateString() : 'N/A'}</div>
             <div className="text-sm text-purple-600">Last Order</div>
           </div>
           <div className="bg-orange-50 rounded-lg p-4">
-            <div className="text-2xl font-bold text-orange-600">{new Date(item.nextFollowUp).toLocaleDateString()}</div>
+            <div className="text-2xl font-bold text-orange-600">{item.nextFollowUp ? new Date(item.nextFollowUp).toLocaleDateString() : 'N/A'}</div>
             <div className="text-sm text-orange-600">Next Follow-up</div>
           </div>
         </div>

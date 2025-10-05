@@ -129,7 +129,7 @@ To verify everything is working:
 
 Your CSE310 Module 3 inventory management system is now **fully database-driven** with real-time updates, live statistics, and production-ready data persistence!
 
-**Database URL**: https://supabase.com/dashboard/project/xxgpfxkokhuqoooqakkd
+**Database URL**: https://supabase.com/dashboard/project/[your-project-id]
 **Application URL**: http://localhost:5174
 
 ---
