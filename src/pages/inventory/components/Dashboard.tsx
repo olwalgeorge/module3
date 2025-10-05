@@ -2,6 +2,12 @@
 import { dashboardStats } from '../../../mocks/inventory';
 
 export default function Dashboard() {
+  // Navigation handler for quick actions
+  const onNavigate = (section: string) => {
+    console.log(`Navigate to ${section}`);
+    // TODO: Implement navigation logic or integrate with router
+  };
+
   // Mock products data directly in component to avoid import issues
   const products = [
     {
@@ -16,7 +22,7 @@ export default function Dashboard() {
       cost: 1999.99,
       status: 'In Stock',
       lastUpdated: '2024-01-15',
-      image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop&auto=format'
+      image: '/images/laptop001_400x300.jpg'
     },
     {
       id: 2,
