@@ -12,7 +12,7 @@ export const products = [
     cost: 1999.99,
     status: 'In Stock',
     lastUpdated: '2024-01-15',
-    image: 'https://readdy.ai/api/search-image?query=modern%20silver%20laptop%20computer%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20style%2C%20high%20quality%2C%20studio%20lighting&width=400&height=300&seq=laptop001&orientation=landscape'
+    image: '/images/laptop001_400x300.jpg'
   },
   {
     id: 2,
@@ -26,7 +26,7 @@ export const products = [
     cost: 799.99,
     status: 'Low Stock',
     lastUpdated: '2024-01-14',
-    image: 'https://readdy.ai/api/search-image?query=premium%20smartphone%20with%20titanium%20finish%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20design%20and%20studio%20lighting%2C%20minimalist%20composition&width=400&height=300&seq=phone001&orientation=landscape'
+    image: '/images/phone001_400x300.jpg'
   },
   {
     id: 3,
@@ -40,7 +40,7 @@ export const products = [
     cost: 249.99,
     status: 'In Stock',
     lastUpdated: '2024-01-13',
-    image: 'https://readdy.ai/api/search-image?query=professional%20computer%20monitor%20with%20black%20frame%20on%20clean%20white%20background%2C%20modern%20display%20screen%2C%20studio%20lighting%2C%20minimalist%20product%20photography&width=400&height=300&seq=monitor001&orientation=landscape'
+    image: '/images/monitor001_400x300.jpg'
   },
   {
     id: 4,
@@ -54,7 +54,7 @@ export const products = [
     cost: 49.99,
     status: 'Out of Stock',
     lastUpdated: '2024-01-12',
-    image: 'https://readdy.ai/api/search-image?query=sleek%20wireless%20computer%20mouse%20in%20black%20color%20on%20clean%20white%20background%2C%20modern%20ergonomic%20design%2C%20professional%20product%20photography%2C%20studio%20lighting&width=400&height=300&seq=mouse001&orientation=landscape'
+    image: '/images/mouse001_400x300.jpg'
   },
   {
     id: 5,
@@ -68,7 +68,7 @@ export const products = [
     cost: 99.99,
     status: 'In Stock',
     lastUpdated: '2024-01-11',
-    image: 'https://readdy.ai/api/search-image?query=mechanical%20gaming%20keyboard%20with%20RGB%20lighting%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20design%2C%20studio%20lighting%20setup&width=400&height=300&seq=keyboard001&orientation=landscape'
+    image: '/images/keyboard001_400x300.jpg'
   }
 ];
 
@@ -432,7 +432,7 @@ export const stockMovements = [
     id: 1,
     productName: 'MacBook Pro 16"',
     sku: 'MBP-16-001',
-    productImage: 'https://readdy.ai/api/search-image?query=modern%20silver%20laptop%20computer%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20style%2C%20high%20quality%2C%20studio%20lighting&width=400&height=300&seq=laptop001&orientation=landscape',
+    productImage: '/images/laptop001_400x300.jpg',
     type: 'Purchase',
     quantity: 10,
     balanceAfter: 35,
@@ -446,7 +446,7 @@ export const stockMovements = [
     id: 2,
     productName: 'iPhone 15 Pro',
     sku: 'IP15P-001',
-    productImage: 'https://readdy.ai/api/search-image?query=premium%20smartphone%20with%20titanium%20finish%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20design%20and%20studio%20lighting%2C%20minimalist%20composition&width=400&height=300&seq=phone001&orientation=landscape',
+    productImage: '/images/phone001_400x300.jpg',
     type: 'Sale',
     quantity: -2,
     balanceAfter: 8,
@@ -460,7 +460,7 @@ export const stockMovements = [
     id: 3,
     productName: 'Dell Monitor 27"',
     sku: 'DM-27-001',
-    productImage: 'https://readdy.ai/api/search-image?query=professional%20computer%20monitor%20with%20black%20frame%20on%20clean%20white%20background%2C%20modern%20display%20screen%2C%20studio%20lighting%2C%20minimalist%20product%20photography&width=400&height=300&seq=monitor001&orientation=landscape',
+    productImage: '/images/monitor001_400x300.jpg',
     type: 'Adjustment',
     quantity: 5,
     balanceAfter: 50,
@@ -474,7 +474,7 @@ export const stockMovements = [
     id: 4,
     productName: 'Gaming Keyboard',
     sku: 'GK-001',
-    productImage: 'https://readdy.ai/api/search-image?query=mechanical%20gaming%20keyboard%20with%20RGB%20lighting%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20design%2C%20studio%20lighting%20setup&width=400&height=300&seq=keyboard001&orientation=landscape',
+    productImage: '/images/keyboard001_400x300.jpg',
     type: 'Return',
     quantity: 3,
     balanceAfter: 35,
@@ -488,7 +488,7 @@ export const stockMovements = [
     id: 5,
     productName: 'Wireless Mouse',
     sku: 'WM-001',
-    productImage: 'https://readdy.ai/api/search-image?query=sleek%20wireless%20computer%20mouse%20in%20black%20color%20on%20clean%20white%20background%2C%20modern%20ergonomic%20design%2C%20professional%20product%20photography%2C%20studio%20lighting&width=400&height=300&seq=mouse001&orientation=landscape',
+    productImage: '/images/mouse001_400x300.jpg',
     type: 'Sale',
     quantity: -25,
     balanceAfter: 0,
@@ -804,7 +804,7 @@ export const productVariants = [
     price: 2799.99,
     cost: 2239.99,
     status: 'In Stock',
-    image: 'https://readdy.ai/api/search-image?query=modern%20space%20gray%20laptop%20computer%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20style%2C%20high%20quality%2C%20studio%20lighting&width=400&height=300&seq=laptop002&orientation=landscape'
+    image: '/images/laptop002_400x300.jpg'
   },
   {
     id: 2,
@@ -821,7 +821,7 @@ export const productVariants = [
     price: 2499.99,
     cost: 1999.99,
     status: 'Low Stock',
-    image: 'https://readdy.ai/api/search-image?query=modern%20silver%20laptop%20computer%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20style%2C%20high%20quality%2C%20studio%20lighting&width=400&height=300&seq=laptop001&orientation=landscape'
+    image: '/images/laptop001_400x300.jpg'
   },
   {
     id: 3,
@@ -838,7 +838,7 @@ export const productVariants = [
     price: 2399.99,
     cost: 1919.99,
     status: 'In Stock',
-    image: 'https://readdy.ai/api/search-image?query=modern%20space%20gray%20compact%20laptop%20computer%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20style%2C%20high%20quality%2C%20studio%20lighting&width=400&height=300&seq=laptop003&orientation=landscape'
+    image: '/images/laptop003_400x300.jpg'
   },
   {
     id: 4,
@@ -854,7 +854,7 @@ export const productVariants = [
     price: 1099.99,
     cost: 879.99,
     status: 'In Stock',
-    image: 'https://readdy.ai/api/search-image?query=premium%20natural%20titanium%20smartphone%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20design%20and%20studio%20lighting%2C%20minimalist%20composition&width=400&height=300&seq=phone002&orientation=landscape'
+    image: '/images/phone002_400x300.jpg'
   },
   {
     id: 5,
@@ -870,7 +870,7 @@ export const productVariants = [
     price: 1299.99,
     cost: 1039.99,
     status: 'In Stock',
-    image: 'https://readdy.ai/api/search-image?query=premium%20blue%20titanium%20smartphone%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20design%20and%20studio%20lighting%2C%20minimalist%20composition&width=400&height=300&seq=phone003&orientation=landscape'
+    image: '/images/phone003_400x300.jpg'
   },
   {
     id: 6,
@@ -886,7 +886,7 @@ export const productVariants = [
     price: 1499.99,
     cost: 1199.99,
     status: 'Low Stock',
-    image: 'https://readdy.ai/api/search-image?query=premium%20black%20titanium%20smartphone%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20design%20and%20studio%20lighting%2C%20minimalist%20composition&width=400&height=300&seq=phone004&orientation=landscape'
+    image: '/images/phone004_400x300.jpg'
   },
   {
     id: 7,
@@ -902,7 +902,7 @@ export const productVariants = [
     price: 449.99,
     cost: 359.99,
     status: 'In Stock',
-    image: 'https://readdy.ai/api/search-image?query=professional%204K%20computer%20monitor%20with%20USB-C%20connectivity%20on%20clean%20white%20background%2C%20modern%20display%20screen%2C%20studio%20lighting%2C%20minimalist%20product%20photography&width=400&height=300&seq=monitor002&orientation=landscape'
+    image: '/images/monitor002_400x300.jpg'
   },
   {
     id: 8,
@@ -918,7 +918,7 @@ export const productVariants = [
     price: 329.99,
     cost: 263.99,
     status: 'In Stock',
-    image: 'https://readdy.ai/api/search-image?query=professional%20QHD%20computer%20monitor%20with%20HDMI%20connectivity%20on%20clean%20white%20background%2C%20modern%20display%20screen%2C%20studio%20lighting%2C%20minimalist%20product%20photography&width=400&height=300&seq=monitor3&orientation=landscape'
+    image: '/images/monitor3_400x300.jpg'
   },
   {
     id: 9,
@@ -934,7 +934,7 @@ export const productVariants = [
     price: 129.99,
     cost: 83.99,
     status: 'In Stock',
-    image: 'https://readdy.ai/api/search-image?query=professional%20gaming%20mouse%20with%20RGB%20lighting%20in%20black%20color%20on%20clean%20white%20background%2C%20modern%20ergonomic%20design%2C%20professional%20product%20photography%2C%20studio%20lighting&width=400&height=300&seq=mouse002&orientation=landscape'
+    image: '/images/mouse002_400x300.jpg'
   },
   {
     id: 10,
@@ -950,7 +950,7 @@ export const productVariants = [
     price: 49.99,
     cost: 32.49,
     status: 'Out of Stock',
-    image: 'https://readdy.ai/api/search-image?query=sleek%20office%20wireless%20computer%20mouse%20in%20gray%20color%20on%20clean%20white%20background%2C%20modern%20ergonomic%20design%2C%20professional%20product%20photography%2C%20studio%20lighting&width=400&height=300&seq=mouse003&orientation=landscape'
+    image: '/images/mouse003_400x300.jpg'
   },
   {
     id: 11,
@@ -966,7 +966,7 @@ export const productVariants = [
     price: 179.99,
     cost: 116.99,
     status: 'In Stock',
-    image: 'https://readdy.ai/api/search-image?query=mechanical%20gaming%20keyboard%20with%20RGB%20lighting%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20design%2C%20studio%20lighting%20setup&width=400&height=300&seq=keyboard001&orientation=landscape'
+    image: '/images/keyboard001_400x300.jpg'
   },
   {
     id: 12,
@@ -982,7 +982,7 @@ export const productVariants = [
     price: 99.99,
     cost: 64.99,
     status: 'In Stock',
-    image: 'https://readdy.ai/api/search-image?query=white%20gaming%20keyboard%20with%20backlit%20keys%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20design%2C%20studio%20lighting%20setup&width=400&height=300&seq=keyboard002&orientation=landscape'
+    image: '/images/keyboard002_400x300.jpg'
   }
 ];
 

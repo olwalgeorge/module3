@@ -71,7 +71,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 1999.99,
         cost: 1599.99,
         status: 'In Stock',
-        image: 'https://readdy.ai/api/search-image?query=silver%20MacBook%20Pro%2014%20inch%20laptop%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20style%2C%20studio%20lighting%2C%20modern%20design&width=400&height=300&seq=mbp14silver&orientation=landscape'
+        image: '/images/mbp14silver_400x300.jpg'
       },
       {
         id: 'mbp-14-spacegray-512',
@@ -81,7 +81,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 1999.99,
         cost: 1599.99,
         status: 'In Stock',
-        image: 'https://readdy.ai/api/search-image?query=space%20gray%20MacBook%20Pro%2014%20inch%20laptop%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20style%2C%20studio%20lighting%2C%20modern%20design&width=400&height=300&seq=mbp14gray&orientation=landscape'
+        image: '/images/mbp14gray_400x300.jpg'
       },
       {
         id: 'mbp-16-silver-1tb',
@@ -91,7 +91,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 2499.99,
         cost: 1999.99,
         status: 'In Stock',
-        image: 'https://readdy.ai/api/search-image?query=silver%20MacBook%20Pro%2016%20inch%20laptop%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20style%2C%20studio%20lighting%2C%20modern%20design&width=400&height=300&seq=mbp16silver&orientation=landscape'
+        image: '/images/mbp16silver_400x300.jpg'
       },
       {
         id: 'mbp-16-spacegray-1tb',
@@ -102,7 +102,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 2499.99,
         cost: 1999.99,
         status: 'In Stock',
-        image: 'https://readdy.ai/api/search-image?query=space%20gray%20MacBook%20Pro%2016%20inch%20laptop%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20style%2C%20studio%20lighting%2C%20modern%20design&width=400&height=300&seq=mbp16gray&orientation=landscape'
+        image: '/images/mbp16gray_400x300.jpg'
       }
     ]
   },
@@ -133,7 +133,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 999.99,
         cost: 799.99,
         status: 'In Stock',
-        image: 'https://readdy.ai/api/search-image?query=iPhone%2015%20Pro%20in%20natural%20titanium%20color%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20smartphone%20design%2C%20studio%20lighting&width=400&height=300&seq=ip15natural&orientation=landscape'
+        image: '/images/ip15natural_400x300.jpg'
       },
       {
         id: 'ip15p-blue-256',
@@ -143,7 +143,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 1099.99,
         cost: 879.99,
         status: 'In Stock',
-        image: 'https://readdy.ai/api/search-image?query=iPhone%2015%20Pro%20in%20blue%20titanium%20color%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20smartphone%20design%2C%20studio%20lighting&width=400&height=300&seq=ip15blue&orientation=landscape'
+        image: '/images/ip15blue_400x300.jpg'
       },
       {
         id: 'ip15p-white-512',
@@ -153,7 +153,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 1299.99,
         cost: 1039.99,
         status: 'Low Stock',
-        image: 'https://readdy.ai/api/search-image?query=iPhone%2015%20Pro%20in%20white%20titanium%20color%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20smartphone%20design%2C%20studio%20lighting&width=400&height=300&seq=ip15white&orientation=landscape'
+        image: '/images/ip15white_400x300.jpg'
       },
       {
         id: 'ip15p-black-1tb',
@@ -163,7 +163,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 1499.99,
         cost: 1199.99,
         status: 'Out of Stock',
-        image: 'https://readdy.ai/api/search-image?query=iPhone%2015%20Pro%20in%20black%20titanium%20color%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20smartphone%20design%2C%20studio%20lighting&width=400&height=300&seq=ip15black&orientation=landscape'
+        image: '/images/ip15black_400x300.jpg'
       },
       {
         id: 'ip15p-natural-256',
@@ -173,7 +173,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 1099.99,
         cost: 879.99,
         status: 'Low Stock',
-        image: 'https://readdy.ai/api/search-image?query=iPhone%2015%20Pro%20in%20natural%20titanium%20color%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20smartphone%20design%2C%20studio%20lighting&width=400&height=300&seq=ip15natural256&orientation=landscape'
+        image: '/images/ip15natural256_400x300.jpg'
       }
     ]
   },
@@ -204,7 +204,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 299.99,
         cost: 239.99,
         status: 'In Stock',
-        image: 'https://readdy.ai/api/search-image?query=Dell%2024%20inch%20monitor%20with%20black%20frame%20on%20clean%20white%20background%2C%20professional%20display%20screen%2C%20modern%20design%2C%20studio%20lighting%2C%20minimalist%20product%20photography&width=400&height=300&seq=dell24&orientation=landscape'
+        image: '/images/dell24_400x300.jpg'
       },
       {
         id: 'dus-27-4k',
@@ -214,7 +214,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 499.99,
         cost: 399.99,
         status: 'In Stock',
-        image: 'https://readdy.ai/api/search-image?query=Dell%2027%20inch%204K%20monitor%20with%20black%20frame%20on%20clean%20white%20background%2C%20professional%20display%20screen%2C%20modern%20design%2C%20studio%20lighting%2C%20minimalist%20product%20photography&width=400&height=300&seq=dell27&orientation=landscape'
+        image: '/images/dell27_400x300.jpg'
       },
       {
         id: 'dus-32-4k',
@@ -224,7 +224,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 799.99,
         cost: 639.99,
         status: 'In Stock',
-        image: 'https://readdy.ai/api/search-image?query=Dell%2032%20inch%204K%20monitor%20with%20black%20frame%20on%20clean%20white%20background%2C%20professional%20display%20screen%2C%20modern%20design%2C%20studio%20lighting%2C%20minimalist%20product%20photography&width=400&height=300&seq=dell32&orientation=landscape'
+        image: '/images/dell32_400x300.jpg'
       }
     ]
   },
@@ -255,7 +255,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 99.99,
         cost: 69.99,
         status: 'In Stock',
-        image: 'https://readdy.ai/api/search-image?query=black%20wireless%20gaming%20mouse%20with%20RGB%20lighting%20on%20clean%20white%20background%2C%20modern%20ergonomic%20design%2C%20professional%20product%20photography%2C%20studio%20lighting&width=400&height=300&seq=mouseblack&orientation=landscape'
+        image: '/images/mouseblack_400x300.jpg'
       },
       {
         id: 'wgm-white-12k',
@@ -265,7 +265,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 99.99,
         cost: 69.99,
         status: 'In Stock',
-        image: 'https://readdy.ai/api/search-image?query=white%20wireless%20gaming%20mouse%20with%20RGB%20lighting%20on%20clean%20white%20background%2C%20modern%20ergonomic%20design%2C%20professional%20product%20photography%2C%20studio%20lighting&width=400&height=300&seq=mousewhite&orientation=landscape'
+        image: '/images/mousewhite_400x300.jpg'
       },
       {
         id: 'wgm-black-25k',
@@ -275,7 +275,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 129.99,
         cost: 89.99,
         status: 'Low Stock',
-        image: 'https://readdy.ai/api/search-image?query=premium%20black%20wireless%20gaming%20mouse%20with%20advanced%20sensor%20on%20clean%20white%20background%2C%20modern%20ergonomic%20design%2C%20professional%20product%20photography%2C%20studio%20lighting&width=400&height=300&seq=mouseblackpro&orientation=landscape'
+        image: '/images/mouseblackpro_400x300.jpg'
       },
       {
         id: 'wgm-rgb-12k',
@@ -285,7 +285,7 @@ export const productsWithVariants: ProductWithVariants[] = [
         price: 79.99,
         cost: 59.99,
         status: 'Low Stock',
-        image: 'https://readdy.ai/api/search-image?query=RGB%20gaming%20mouse%20with%20colorful%20lighting%20effects%20on%20clean%20white%20background%2C%20modern%20ergonomic%20design%2C%20professional%20product%20photography%2C%20studio%20lighting&width=400&height=300&seq=mousergb&orientation=landscape'
+        image: '/images/mousergb_400x300.jpg'
       }
     ]
   }

@@ -16,7 +16,7 @@ export default function Dashboard() {
       cost: 1999.99,
       status: 'In Stock',
       lastUpdated: '2024-01-15',
-      image: 'https://readdy.ai/api/search-image?query=modern%20silver%20laptop%20computer%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20style%2C%20high%20quality%2C%20studio%20lighting&width=400&height=300&seq=laptop001&orientation=landscape'
+      image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop&auto=format'
     },
     {
       id: 2,
@@ -30,7 +30,7 @@ export default function Dashboard() {
       cost: 799.99,
       status: 'Low Stock',
       lastUpdated: '2024-01-14',
-      image: 'https://readdy.ai/api/search-image?query=premium%20smartphone%20with%20titanium%20finish%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20modern%20design%20and%20studio%20lighting%2C%20minimalist%20composition&width=400&height=300&seq=phone001&orientation=landscape'
+      image: '/images/phone001_400x300.jpg'
     },
     {
       id: 4,
@@ -44,7 +44,7 @@ export default function Dashboard() {
       cost: 49.99,
       status: 'Out of Stock',
       lastUpdated: '2024-01-12',
-      image: 'https://readdy.ai/api/search-image?query=sleek%20wireless%20computer%20mouse%20in%20black%20color%20on%20clean%20white%20background%2C%20modern%20ergonomic%20design%2C%20professional%20product%20photography%2C%20studio%20lighting&width=400&height=300&seq=mouse001&orientation=landscape'
+      image: '/images/mouse001_400x300.jpg'
     }
   ];
 

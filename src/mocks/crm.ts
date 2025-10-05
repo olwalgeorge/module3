@@ -23,7 +23,7 @@ export const customers = [
     nextFollowUp: '2024-01-20',
     tags: ['VIP', 'Enterprise', 'Technology'],
     notes: 'Long-term client with consistent large orders. Prefers bulk purchases.',
-    avatar: 'https://readdy.ai/api/search-image?query=professional%20business%20person%20in%20modern%20office%20setting%2C%20corporate%20headshot%20style%2C%20clean%20background%2C%20professional%20lighting%2C%20business%20attire&width=100&height=100&seq=avatar001&orientation=squarish'
+    avatar: '/images/avatar001_100x100.jpg'
   },
   {
     id: 2,
@@ -48,7 +48,7 @@ export const customers = [
     nextFollowUp: '2024-01-18',
     tags: ['Creative', 'Design', 'Regular'],
     notes: 'Focuses on design equipment and creative tools. Seasonal ordering patterns.',
-    avatar: 'https://readdy.ai/api/search-image?query=professional%20creative%20woman%20in%20modern%20workspace%2C%20friendly%20business%20portrait%2C%20clean%20background%2C%20natural%20lighting%2C%20creative%20industry%20professional&width=100&height=100&seq=avatar002&orientation=squarish'
+    avatar: '/images/avatar002_100x100.jpg'
   },
   {
     id: 3,
@@ -73,7 +73,7 @@ export const customers = [
     nextFollowUp: '2024-01-22',
     tags: ['Startup', 'Growth', 'Tech'],
     notes: 'Fast-growing startup with increasing order frequency. Potential for partnership.',
-    avatar: 'https://readdy.ai/api/search-image?query=young%20professional%20entrepreneur%20in%20modern%20startup%20office%2C%20confident%20business%20portrait%2C%20clean%20background%2C%20natural%20lighting%2C%20tech%20industry%20professional&width=100&height=100&seq=avatar003&orientation=squarish'
+    avatar: '/images/avatar003_100x100.jpg'
   },
   {
     id: 4,
@@ -98,7 +98,7 @@ export const customers = [
     nextFollowUp: '2024-01-17',
     tags: ['Prospect', 'Marketing', 'Qualified'],
     notes: 'Interested in bulk orders for team equipment. Currently evaluating options.',
-    avatar: 'https://readdy.ai/api/search-image?query=professional%20marketing%20woman%20in%20modern%20office%2C%20confident%20business%20portrait%2C%20clean%20background%2C%20professional%20lighting%2C%20marketing%20industry%20professional&width=100&height=100&seq=avatar004&orientation=squarish'
+    avatar: '/images/avatar004_100x100.jpg'
   },
   {
     id: 5,
@@ -123,7 +123,7 @@ export const customers = [
     nextFollowUp: '2024-01-19',
     tags: ['Enterprise', 'Procurement', 'Volume'],
     notes: 'Large enterprise client with quarterly bulk orders. Contract renewal due Q2.',
-    avatar: 'https://readdy.ai/api/search-image?query=professional%20business%20man%20in%20corporate%20setting%2C%20executive%20portrait%20style%2C%20clean%20background%2C%20professional%20lighting%2C%20enterprise%20professional&width=100&height=100&seq=avatar005&orientation=squarish'
+    avatar: '/images/avatar005_100x100.jpg'
   },
   {
     id: 6,
@@ -148,7 +148,7 @@ export const customers = [
     nextFollowUp: '2024-01-25',
     tags: ['Freelancer', 'Remote', 'Inactive'],
     notes: 'Irregular ordering pattern. Last contact showed interest in remote work equipment.',
-    avatar: 'https://readdy.ai/api/search-image?query=professional%20woman%20working%20remotely%2C%20friendly%20business%20portrait%2C%20home%20office%20background%2C%20natural%20lighting%2C%20remote%20work%20professional&width=100&height=100&seq=avatar006&orientation=squarish'
+    avatar: '/images/avatar006_100x100.jpg'
   }
 ];
 
