@@ -196,3 +196,6 @@ target/
 *.exe
 *.out
 *.app
+
+# Python scripts
+*.py
