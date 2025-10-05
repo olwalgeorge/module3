@@ -197,5 +197,9 @@ target/
 *.out
 *.app
 
-# Python scripts
+# Python scripts and utilities
 *.py
+download_images.py
+
+# Image download logs
+image_download_log.json
