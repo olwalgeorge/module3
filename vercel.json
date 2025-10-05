@@ -6,7 +6,9 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "VITE_SUPABASE_URL": "https://xxgpfxkokhuqoooqakkd.supabase.co",
+    "VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4Z3BmeGtva2h1cW9vb3Fha2tkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NjczNTEsImV4cCI6MjA3NTI0MzM1MX0.T9AmS12oaTWimda83HmaxBEEQLpbHcTH4QeWAggA_iU"
   },
   "rewrites": [
     {

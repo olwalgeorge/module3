@@ -1,0 +1,176 @@
+import { createClient } from '@supabase/supabase-js'
+
+// Supabase configuration
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://xxgpfxkokhuqoooqakkd.supabase.co'
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4Z3BmeGtva2h1cW9vb3Fha2tkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NjczNTEsImV4cCI6MjA3NTI0MzM1MX0.T9AmS12oaTWimda83HmaxBEEQLpbHcTH4QeWAggA_iU'
+
+// Create Supabase client
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 10
+    }
+  }
+})
+
+// Database helper functions
+export const db = {
+  // Products
+  async getProducts() {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return data
+  },
+
+  async createProduct(product: any) {
+    const { data, error } = await supabase
+      .from('products')
+      .insert([product])
+      .select()
+    
+    if (error) throw error
+    return data[0]
+  },
+
+  async updateProduct(id: string, updates: any) {
+    const { data, error } = await supabase
+      .from('products')
+      .update(updates)
+      .eq('id', id)
+      .select()
+    
+    if (error) throw error
+    return data[0]
+  },
+
+  async deleteProduct(id: string) {
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id)
+    
+    if (error) throw error
+  },
+
+  // Orders
+  async getOrders() {
+    const { data, error } = await supabase
+      .from('orders')
+      .select(`
+        *,
+        order_items (
+          *,
+          products (*)
+        )
+      `)
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return data
+  },
+
+  async createOrder(order: any) {
+    const { data, error } = await supabase
+      .from('orders')
+      .insert([order])
+      .select()
+    
+    if (error) throw error
+    return data[0]
+  },
+
+  // Categories
+  async getCategories() {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('name')
+    
+    if (error) throw error
+    return data
+  },
+
+  // Suppliers
+  async getSuppliers() {
+    const { data, error } = await supabase
+      .from('suppliers')
+      .select('*')
+      .order('name')
+    
+    if (error) throw error
+    return data
+  },
+
+  // Stock movements
+  async getStockMovements() {
+    const { data, error } = await supabase
+      .from('stock_movements')
+      .select(`
+        *,
+        products (name, sku)
+      `)
+      .order('created_at', { ascending: false })
+      .limit(100)
+    
+    if (error) throw error
+    return data
+  },
+
+  async createStockMovement(movement: any) {
+    const { data, error } = await supabase
+      .from('stock_movements')
+      .insert([movement])
+      .select()
+    
+    if (error) throw error
+    return data[0]
+  }
+}
+
+// Authentication helpers
+export const auth = {
+  async signUp(email: string, password: string) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password
+    })
+    
+    if (error) throw error
+    return data
+  },
+
+  async signIn(email: string, password: string) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
+    
+    if (error) throw error
+    return data
+  },
+
+  async signOut() {
+    const { error } = await supabase.auth.signOut()
+    if (error) throw error
+  },
+
+  async getCurrentUser() {
+    const { data: { user } } = await supabase.auth.getUser()
+    return user
+  },
+
+  onAuthStateChange(callback: (event: string, session: any) => void) {
+    return supabase.auth.onAuthStateChange(callback)
+  }
+}
+
+export default supabase

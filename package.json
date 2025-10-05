@@ -38,6 +38,7 @@
     "npm": ">=8.0.0"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.58.0",
     "@vitejs/plugin-react-swc": "^3.11.0",
     "autoprefixer": "^10.4.21",
     "i18next": "^25.5.3",
