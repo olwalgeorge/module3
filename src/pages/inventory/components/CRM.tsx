@@ -1,11 +1,14 @@
 
 import { useState } from 'react';
-import { customers, leads, activities, deals, crmStats } from '../../../mocks/crm';
+import { useCustomers } from '../../../hooks/useDatabase';
+import { leads, activities, deals, crmStats } from '../../../mocks/crm';
 import Button from '../../../components/base/Button';
 import Input from '../../../components/base/Input';
 import Modal from '../../../components/base/Modal';
 
 export default function CRM() {
+  // Database hooks for real-time data
+  const { customers, loading: customersLoading, addCustomer, updateCustomer } = useCustomers();
   const [activeTab, setActiveTab] = useState('customers');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
@@ -16,7 +19,7 @@ export default function CRM() {
   const getTabContent = () => {
     switch (activeTab) {
       case 'customers':
-        return <CustomersTab searchTerm={searchTerm} selectedFilter={selectedFilter} onView={handleView} />;
+        return <CustomersTab searchTerm={searchTerm} selectedFilter={selectedFilter} onView={handleView} customers={customers} loading={customersLoading} />;
       case 'leads':
         return <LeadsTab searchTerm={searchTerm} selectedFilter={selectedFilter} onView={handleView} />;
       case 'deals':
@@ -24,7 +27,7 @@ export default function CRM() {
       case 'activities':
         return <ActivitiesTab searchTerm={searchTerm} selectedFilter={selectedFilter} onView={handleView} />;
       default:
-        return <CustomersTab searchTerm={searchTerm} selectedFilter={selectedFilter} onView={handleView} />;
+        return <CustomersTab searchTerm={searchTerm} selectedFilter={selectedFilter} onView={handleView} customers={customers} loading={customersLoading} />;
     }
   };
 
@@ -224,11 +227,20 @@ export default function CRM() {
 }
 
 // Customers Tab Component
-function CustomersTab({ searchTerm, selectedFilter, onView }: any) {
-  const filteredCustomers = customers.filter(customer => {
+function CustomersTab({ searchTerm, selectedFilter, onView, customers, loading }: any) {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <span className="ml-3 text-gray-600">Loading customers...</span>
+      </div>
+    );
+  }
+
+  const filteredCustomers = customers.filter((customer: any) => {
     const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         customer.company.toLowerCase().includes(searchTerm.toLowerCase());
+                         (customer.company && customer.company.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesFilter = selectedFilter === 'all' || customer.status.toLowerCase() === selectedFilter;
     return matchesSearch && matchesFilter;
   });

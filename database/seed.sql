@@ -58,14 +58,51 @@ INSERT INTO warehouses (id, name, code, address, manager, capacity, status) VALU
 -- STEP 4: PRODUCTS
 -- ===================================================================
 INSERT INTO products (id, name, sku, description, category_id, supplier_id, price, cost, quantity, min_stock_level, max_stock_level, status, image_url, barcode, weight) VALUES
-('01912f4d-1234-7890-abcd-000000000001', 'MacBook Pro 16"', 'MBP-16-001', 'Apple MacBook Pro 16-inch with M3 Pro chip', '01912f4a-1234-7890-abcd-000000000001', '01912f4b-1234-7890-abcd-000000000001', 2499.99, 1999.99, 25, 10, 100, 'active', '/images/laptop001_400x300.jpg', '194252581747', 2.1),
-('01912f4d-1234-7890-abcd-000000000002', 'iPhone 15 Pro', 'IP15P-001', 'Apple iPhone 15 Pro with A17 Pro chip', '01912f4a-1234-7890-abcd-000000000001', '01912f4b-1234-7890-abcd-000000000001', 999.99, 799.99, 8, 15, 200, 'active', '/images/phone001_400x300.jpg', '194253433408', 0.187),
-('01912f4d-1234-7890-abcd-000000000003', 'Dell Monitor 27"', 'DM-27-001', 'Dell 27-inch 4K UltraSharp Monitor', '01912f4a-1234-7890-abcd-000000000001', '01912f4b-1234-7890-abcd-000000000002', 329.99, 249.99, 45, 20, 150, 'active', '/images/monitor001_400x300.jpg', '884116365891', 6.4),
-('01912f4d-1234-7890-abcd-000000000004', 'Wireless Mouse', 'WM-001', 'Logitech MX Master 3S Wireless Mouse', '01912f4a-1234-7890-abcd-000000000002', '01912f4b-1234-7890-abcd-000000000003', 79.99, 49.99, 0, 25, 200, 'active', '/images/mouse001_400x300.jpg', '097855152589', 0.141),
-('01912f4d-1234-7890-abcd-000000000005', 'Gaming Keyboard', 'GK-001', 'Razer BlackWidow V4 Mechanical Gaming Keyboard', '01912f4a-1234-7890-abcd-000000000002', '01912f4b-1234-7890-abcd-000000000004', 149.99, 99.99, 32, 15, 100, 'active', '/images/keyboard001_400x300.jpg', '8886419370239', 1.3);
+('01912f4d-1234-7890-abcd-000000000001', 'MacBook Pro 16"', 'MBP-16-001', 'Apple MacBook Pro 16-inch with M3 Pro chip', '01912f4a-1234-7890-abcd-000000000001', '01912f4b-1234-7890-abcd-000000000001', 2499.99, 1999.99, 25, 10, 100, 'active', 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=300&fit=crop', '194252581747', 2.1),
+('01912f4d-1234-7890-abcd-000000000002', 'iPhone 15 Pro', 'IP15P-001', 'Apple iPhone 15 Pro with A17 Pro chip', '01912f4a-1234-7890-abcd-000000000001', '01912f4b-1234-7890-abcd-000000000001', 999.99, 799.99, 8, 15, 200, 'active', 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=300&fit=crop', '194253433408', 0.187),
+('01912f4d-1234-7890-abcd-000000000003', 'Dell Monitor 27"', 'DM-27-001', 'Dell 27-inch 4K UltraSharp Monitor', '01912f4a-1234-7890-abcd-000000000001', '01912f4b-1234-7890-abcd-000000000002', 329.99, 249.99, 45, 20, 150, 'active', 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=300&fit=crop', '884116365891', 6.4),
+('01912f4d-1234-7890-abcd-000000000004', 'Wireless Mouse', 'WM-001', 'Logitech MX Master 3S Wireless Mouse', '01912f4a-1234-7890-abcd-000000000002', '01912f4b-1234-7890-abcd-000000000003', 79.99, 49.99, 0, 25, 200, 'active', 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop', '097855152589', 0.141),
+('01912f4d-1234-7890-abcd-000000000005', 'Gaming Keyboard', 'GK-001', 'Razer BlackWidow V4 Mechanical Gaming Keyboard', '01912f4a-1234-7890-abcd-000000000002', '01912f4b-1234-7890-abcd-000000000004', 149.99, 99.99, 32, 15, 100, 'active', 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop', '8886419370239', 1.3);
 
 -- ===================================================================
--- STEP 5: CUSTOMERS (Matching actual table structure)
+-- STEP 5: PRODUCT VARIANTS
+-- ===================================================================
+-- MacBook Pro variants
+INSERT INTO product_variants (id, product_id, variant_name, variant_value, sku_suffix, price_adjustment, stock_quantity, status) VALUES
+-- MacBook Pro 16" variants
+('01912f4v-1234-7890-abcd-000000000001', '01912f4d-1234-7890-abcd-000000000001', 'Color', 'Silver', '-SLV', 0.00, 12, 'active'),
+('01912f4v-1234-7890-abcd-000000000002', '01912f4d-1234-7890-abcd-000000000001', 'Color', 'Space Gray', '-SG', 0.00, 13, 'active'),
+('01912f4v-1234-7890-abcd-000000000003', '01912f4d-1234-7890-abcd-000000000001', 'Storage', '512GB', '-512', 0.00, 15, 'active'),
+('01912f4v-1234-7890-abcd-000000000004', '01912f4d-1234-7890-abcd-000000000001', 'Storage', '1TB', '-1TB', 500.00, 10, 'active'),
+
+-- iPhone 15 Pro variants
+('01912f4v-1234-7890-abcd-000000000005', '01912f4d-1234-7890-abcd-000000000002', 'Color', 'Natural Titanium', '-NAT', 0.00, 3, 'active'),
+('01912f4v-1234-7890-abcd-000000000006', '01912f4d-1234-7890-abcd-000000000002', 'Color', 'Blue Titanium', '-BLU', 0.00, 2, 'active'),
+('01912f4v-1234-7890-abcd-000000000007', '01912f4d-1234-7890-abcd-000000000002', 'Color', 'White Titanium', '-WHT', 0.00, 3, 'active'),
+('01912f4v-1234-7890-abcd-000000000008', '01912f4d-1234-7890-abcd-000000000002', 'Storage', '128GB', '-128', 0.00, 2, 'active'),
+('01912f4v-1234-7890-abcd-000000000009', '01912f4d-1234-7890-abcd-000000000002', 'Storage', '256GB', '-256', 100.00, 3, 'active'),
+('01912f4v-1234-7890-abcd-000000000010', '01912f4d-1234-7890-abcd-000000000002', 'Storage', '512GB', '-512', 200.00, 3, 'active'),
+
+-- Dell Monitor variants
+('01912f4v-1234-7890-abcd-000000000011', '01912f4d-1234-7890-abcd-000000000003', 'Resolution', '4K', '-4K', 0.00, 25, 'active'),
+('01912f4v-1234-7890-abcd-000000000012', '01912f4d-1234-7890-abcd-000000000003', 'Resolution', '1440p', '-1440', -50.00, 20, 'active'),
+('01912f4v-1234-7890-abcd-000000000013', '01912f4d-1234-7890-abcd-000000000003', 'Panel Type', 'IPS', '-IPS', 0.00, 30, 'active'),
+('01912f4v-1234-7890-abcd-000000000014', '01912f4d-1234-7890-abcd-000000000003', 'Panel Type', 'OLED', '-OLED', 200.00, 15, 'active'),
+
+-- Wireless Mouse variants
+('01912f4v-1234-7890-abcd-000000000015', '01912f4d-1234-7890-abcd-000000000004', 'Color', 'Graphite', '-GRA', 0.00, 0, 'active'),
+('01912f4v-1234-7890-abcd-000000000016', '01912f4d-1234-7890-abcd-000000000004', 'Color', 'Pale Gray', '-PAL', 0.00, 0, 'active'),
+('01912f4v-1234-7890-abcd-000000000017', '01912f4d-1234-7890-abcd-000000000004', 'Connectivity', 'Bluetooth', '-BT', 0.00, 0, 'active'),
+('01912f4v-1234-7890-abcd-000000000018', '01912f4d-1234-7890-abcd-000000000004', 'Connectivity', 'USB-C', '-USBC', 10.00, 0, 'active'),
+
+-- Gaming Keyboard variants
+('01912f4v-1234-7890-abcd-000000000019', '01912f4d-1234-7890-abcd-000000000005', 'Switch Type', 'Green', '-GRN', 0.00, 16, 'active'),
+('01912f4v-1234-7890-abcd-000000000020', '01912f4d-1234-7890-abcd-000000000005', 'Switch Type', 'Orange', '-ORG', 0.00, 16, 'active'),
+('01912f4v-1234-7890-abcd-000000000021', '01912f4d-1234-7890-abcd-000000000005', 'Layout', 'Full Size', '-FULL', 0.00, 20, 'active'),
+('01912f4v-1234-7890-abcd-000000000022', '01912f4d-1234-7890-abcd-000000000005', 'Layout', 'Tenkeyless', '-TKL', -30.00, 12, 'active');
+
+-- ===================================================================
+-- STEP 6: CUSTOMERS (Matching actual table structure)
 -- ===================================================================
 INSERT INTO customers (id, name, email, phone, address, company, status, notes) VALUES
 ('01912f4e-1234-7890-abcd-000000000001', 'John Smith', 'contact@techsolutions.com', '+1 (555) 123-4567', '123 Business Park, Suite 100, San Francisco, CA 94105', 'Tech Solutions Inc.', 'active', 'CTO at Tech Solutions Inc. - Long-term client with consistent large orders. Enterprise customer from Technology industry. Website: https://techsolutions.com. 15 total orders worth $45,750.'),
@@ -74,7 +111,7 @@ INSERT INTO customers (id, name, email, phone, address, company, status, notes) 
 ('01912f4e-1234-7890-abcd-000000000004', 'Lisa Rodriguez', 'lisa@digitalmarketing.com', '+1 (555) 234-5678', '321 Marketing Plaza, Los Angeles, CA 90028', 'Digital Marketing Pro', 'active', 'Marketing Manager at Digital Marketing Pro - Interested in bulk orders for team equipment. SMB prospect from Marketing industry. Website: https://digitalmarketing.com. Currently evaluating options.');
 
 -- ===================================================================
--- STEP 6: ORDERS
+-- STEP 7: ORDERS
 -- ===================================================================
 INSERT INTO orders (id, order_number, type, status, customer_name, customer_email, total_amount, tax_amount, shipping_cost, order_date, expected_delivery, notes) VALUES
 ('01912f4f-1234-7890-abcd-000000000001', 'ORD-2024-001001', 'sale', 'completed', 'Tech Solutions Inc.', 'orders@techsolutions.com', 15779.85, 1263.85, 50.00, '2024-01-15 09:30:00+00', '2024-01-18 17:00:00+00', 'Priority delivery requested'),
@@ -82,7 +119,7 @@ INSERT INTO orders (id, order_number, type, status, customer_name, customer_emai
 ('01912f4f-1234-7890-abcd-000000000003', 'ORD-2024-001003', 'sale', 'pending', 'StartUp Hub', 'orders@startuphub.com', 8999.97, 719.99, 0.00, '2024-01-13 11:45:00+00', '2024-01-20 17:00:00+00', 'Free shipping applied for bulk order');
 
 -- ===================================================================
--- STEP 7: ORDER ITEMS
+-- STEP 8: ORDER ITEMS
 -- ===================================================================
 INSERT INTO order_items (id, order_id, product_id, quantity, unit_price, total_price) VALUES
 -- Order 1001 items
@@ -95,7 +132,7 @@ INSERT INTO order_items (id, order_id, product_id, quantity, unit_price, total_p
 ('01912f50-1234-7890-abcd-000000000005', '01912f4f-1234-7890-abcd-000000000003', '01912f4d-1234-7890-abcd-000000000002', 9, 999.99, 8999.91);
 
 -- ===================================================================
--- STEP 8: STOCK MOVEMENTS
+-- STEP 9: STOCK MOVEMENTS
 -- ===================================================================
 INSERT INTO stock_movements (id, product_id, movement_type, quantity, reference_type, reference_id, reason, notes, created_by, created_at) VALUES
 -- Initial stock entries
@@ -334,6 +371,7 @@ BEGIN
     RAISE NOTICE '- Categories: % records', (SELECT COUNT(*) FROM categories);
     RAISE NOTICE '- Suppliers: % records', (SELECT COUNT(*) FROM suppliers);
     RAISE NOTICE '- Products: % records', (SELECT COUNT(*) FROM products);
+    RAISE NOTICE '- Product Variants: % records', (SELECT COUNT(*) FROM product_variants);
     RAISE NOTICE '- Customers: % records', (SELECT COUNT(*) FROM customers);
     RAISE NOTICE '- Orders: % records', (SELECT COUNT(*) FROM orders);
     RAISE NOTICE '- Stock Movements: % records', (SELECT COUNT(*) FROM stock_movements);

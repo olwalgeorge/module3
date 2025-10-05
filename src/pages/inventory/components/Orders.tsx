@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
-import { orders, products, productVariants, warehouses, locations } from '../../../mocks/inventory';
+import { useOrders, useProducts, useCustomers } from '../../../hooks/useDatabase';
+import { warehouses, locations } from '../../../mocks/inventory';
 import { useCurrency } from '../../../hooks/useCurrency';
 import Button from '../../../components/base/Button';
 import Input from '../../../components/base/Input';
@@ -26,6 +27,11 @@ interface NewOrder {
 }
 
 export default function Orders() {
+  // Database hooks for real-time data
+  const { orders, loading: ordersLoading, addOrder } = useOrders();
+  const { products } = useProducts();
+  const { customers } = useCustomers();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedWarehouse, setSelectedWarehouse] = useState('all');
@@ -45,8 +51,8 @@ export default function Orders() {
   const { formatCurrency, convertCurrency, displayCurrency, availableCurrencies } = useCurrency();
 
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.id.toString().includes(searchTerm);
+    const matchesSearch = order.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         order.order_number.toString().includes(searchTerm);
     const matchesStatus = selectedStatus === 'all' || order.status === selectedStatus;
     
     // Filter by warehouse if selected
@@ -203,17 +209,34 @@ export default function Orders() {
     setSelectedOrder(null);
   };
 
+  // Loading state
+  if (ordersLoading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Orders</h2>
+            <p className="text-gray-600">Loading orders...</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <span className="ml-3 text-gray-600">Loading orders from database...</span>
+        </div>
+      </div>
+    );
+  }
+
   const handlePrintInvoice = (order: any) => {
-    console.log('Printing invoice for order:', order.id);
+    console.log('Printing invoice for order:', order.order_number);
   };
 
   // Calculate statistics with currency conversion
   const totalOrders = orders.length;
-  const completedOrders = orders.filter(order => order.status === 'Completed').length;
-  const processingOrders = orders.filter(order => order.status === 'Processing').length;
+  const completedOrders = orders.filter(order => order.status === 'completed').length;
+  const processingOrders = orders.filter(order => order.status === 'processing' || order.status === 'pending').length;
   const totalRevenue = orders.reduce((sum, order) => {
-    const convertedAmount = convertCurrency(order.total, order.currency, displayCurrency);
-    return sum + convertedAmount;
+    return sum + (order.total_amount || 0);
   }, 0);
 
   return (
@@ -374,27 +397,25 @@ export default function Orders() {
                 return (
                   <tr key={order.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">#{order.id}</div>
+                      <div className="text-sm font-medium text-gray-900">#{order.order_number}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
                           <span className="text-white text-sm font-medium">
-                            {order.customerName.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                            {order.customer_name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                           </span>
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{order.customerName}</div>
-                          <div className="text-sm text-gray-500">Customer</div>
+                          <div className="text-sm font-medium text-gray-900">{order.customer_name}</div>
+                          <div className="text-sm text-gray-500">{order.customer_email}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{order.items.length} items</div>
+                      <div className="text-sm text-gray-900">Order Items</div>
                       <div className="text-sm text-gray-500">
-                        {order.items[0].productName}
-                        {order.items[0].variantName && ` (${order.items[0].variantName})`}
-                        {order.items.length > 1 && ` +${order.items.length - 1} more`}
+                        {formatCurrency(order.total_amount)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

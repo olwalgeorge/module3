@@ -99,6 +99,59 @@ export const db = {
     return data
   },
 
+  // Product Variants
+  async getProductVariants(productId?: string) {
+    let query = supabase
+      .from('product_variants')
+      .select(`
+        *,
+        products (
+          name,
+          sku,
+          image_url
+        )
+      `)
+      .order('created_at')
+    
+    if (productId) {
+      query = query.eq('product_id', productId)
+    }
+    
+    const { data, error } = await query
+    if (error) throw error
+    return data
+  },
+
+  async createProductVariant(variant: any) {
+    const { data, error } = await supabase
+      .from('product_variants')
+      .insert([variant])
+      .select()
+    
+    if (error) throw error
+    return data[0]
+  },
+
+  async updateProductVariant(id: string, updates: any) {
+    const { data, error } = await supabase
+      .from('product_variants')
+      .update(updates)
+      .eq('id', id)
+      .select()
+    
+    if (error) throw error
+    return data[0]
+  },
+
+  async deleteProductVariant(id: string) {
+    const { error } = await supabase
+      .from('product_variants')
+      .delete()
+      .eq('id', id)
+    
+    if (error) throw error
+  },
+
   // Suppliers
   async getSuppliers() {
     const { data, error } = await supabase

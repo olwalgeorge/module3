@@ -502,6 +502,93 @@ export function useRealtimeSubscription(table: string, callback: (payload: any) 
   }, [table, callback])
 }
 
+// Hook for product variants
+export function useProductVariants(productId?: string) {
+  const [variants, setVariants] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    loadVariants()
+    
+    // Set up real-time subscription
+    const subscription = supabase
+      .channel('product_variants_changes')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'product_variants' 
+        }, 
+        () => {
+          loadVariants()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [productId])
+
+  const loadVariants = async () => {
+    try {
+      setLoading(true)
+      const data = await db.getProductVariants(productId)
+      setVariants(data || [])
+      setError(null)
+    } catch (err: any) {
+      setError(err.message)
+      console.warn('Database not available, using fallback:', err.message)
+      setVariants([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const addVariant = async (variant: any) => {
+    try {
+      const newVariant = await db.createProductVariant(variant)
+      await loadVariants()
+      return newVariant
+    } catch (err: any) {
+      setError(err.message)
+      throw err
+    }
+  }
+
+  const updateVariant = async (id: string, updates: any) => {
+    try {
+      const updatedVariant = await db.updateProductVariant(id, updates)
+      await loadVariants()
+      return updatedVariant
+    } catch (err: any) {
+      setError(err.message)
+      throw err
+    }
+  }
+
+  const deleteVariant = async (id: string) => {
+    try {
+      await db.deleteProductVariant(id)
+      await loadVariants()
+    } catch (err: any) {
+      setError(err.message)
+      throw err
+    }
+  }
+
+  return {
+    variants,
+    loading,
+    error,
+    addVariant,
+    updateVariant,
+    deleteVariant,
+    refresh: loadVariants
+  }
+}
+
 // Hook for authentication state
 export function useAuth() {
   const [user, setUser] = useState<any>(null)
