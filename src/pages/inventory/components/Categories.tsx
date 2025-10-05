@@ -1,11 +1,17 @@
 
 import { useState } from 'react';
-import { categories, products, productVariants, warehouses, locations } from '../../../mocks/inventory';
+import { useCategories, useProducts, useProductVariants } from '../../../hooks/useDatabase';
+import { warehouses, locations } from '../../../mocks/inventory';
 import Button from '../../../components/base/Button';
 import Input from '../../../components/base/Input';
 import Modal from '../../../components/base/Modal';
 
 export default function Categories() {
+  // Database hooks for real-time data
+  const { categories } = useCategories();
+  const { products } = useProducts();
+  const { variants: productVariants } = useProductVariants();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -28,17 +34,23 @@ export default function Categories() {
   };
 
   const getCategoryStats = (categoryName: string) => {
-    const categoryProducts = products.filter(p => p.category === categoryName);
+    const category = categories.find(c => c.name === categoryName);
+    const categoryProducts = products.filter(p => p.category_id === category?.id);
     const categoryVariants = productVariants.filter(v => 
-      categoryProducts.some(p => p.name === v.parentProduct)
+      categoryProducts.some(p => p.id === v.product_id)
     );
     
     const totalProducts = categoryProducts.length;
     const totalVariants = categoryVariants.length;
-    const totalQuantity = categoryProducts.reduce((sum, p) => sum + p.quantity, 0) + 
-                         categoryVariants.reduce((sum, v) => sum + v.quantity, 0);
-    const totalValue = categoryProducts.reduce((sum, p) => sum + (p.price * p.quantity), 0) + 
-                      categoryVariants.reduce((sum, v) => sum + (v.price * v.quantity), 0);
+    const totalQuantity = categoryProducts.reduce((sum, p) => sum + (p.quantity || 0), 0) + 
+                         categoryVariants.reduce((sum, v) => sum + (v.stock_quantity || 0), 0);
+    // For variants, calculate price with adjustment
+    const variantValue = categoryVariants.reduce((sum, v) => {
+      const product = categoryProducts.find(p => p.id === v.product_id);
+      const finalPrice = product ? product.price + (v.price_adjustment || 0) : 0;
+      return sum + (finalPrice * (v.stock_quantity || 0));
+    }, 0);
+    const totalValue = categoryProducts.reduce((sum, p) => sum + (p.price * (p.quantity || 0)), 0) + variantValue;
     
     // Get warehouse distribution
     const warehouseDistribution = new Map();
@@ -54,7 +66,9 @@ export default function Categories() {
     });
     
     categoryVariants.forEach(variant => {
-      const variantLocations = locations.filter(l => l.productSku === variant.sku);
+      const product = categoryProducts.find(p => p.id === variant.product_id);
+      const fullSku = product ? `${product.sku}${variant.sku_suffix || ''}` : variant.sku_suffix;
+      const variantLocations = locations.filter(l => l.productSku === fullSku);
       variantLocations.forEach(location => {
         const warehouse = warehouses.find(w => w.id === location.warehouseId);
         if (warehouse) {
@@ -64,8 +78,8 @@ export default function Categories() {
       });
     });
 
-    const lowStockItems = categoryProducts.filter(p => p.quantity <= p.minStock).length + 
-                         categoryVariants.filter(v => v.quantity <= v.minStock).length;
+    const lowStockItems = categoryProducts.filter(p => (p.quantity || 0) <= (p.min_stock_level || 0)).length + 
+                         categoryVariants.filter(v => (v.stock_quantity || 0) <= 5).length; // Default min stock for variants
     
     return {
       totalProducts,
@@ -78,13 +92,14 @@ export default function Categories() {
   };
 
   const getCategoryProducts = (categoryName: string) => {
-    return products.filter(p => p.category === categoryName);
+    const category = categories.find(c => c.name === categoryName);
+    return products.filter(p => p.category_id === category?.id);
   };
 
   const getCategoryVariants = (categoryName: string) => {
     const categoryProducts = getCategoryProducts(categoryName);
-    return productVariants.filter(v => 
-      categoryProducts.some(p => p.name === v.parentProduct)
+    return productVariants.filter(v =>
+      categoryProducts.some(p => p.id === v.product_id)
     );
   };
 
@@ -357,17 +372,22 @@ export default function Categories() {
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {getCategoryProducts(selectedCategory.name).map((product) => {
-                      const variants = productVariants.filter(v => v.parentProduct === product.name);
+                      const variants = productVariants.filter(v => v.product_id === product.id);
                       const productLocations = getProductLocations(product.sku);
-                      const totalVariantStock = variants.reduce((sum, v) => sum + v.quantity, 0);
-                      const totalValue = (product.price * product.quantity) + variants.reduce((sum, v) => sum + (v.price * v.quantity), 0);
+                      const totalVariantStock = variants.reduce((sum, v) => sum + (v.stock_quantity || 0), 0);
+                      // Calculate variant value with price adjustments
+                      const variantValue = variants.reduce((sum, v) => {
+                        const finalPrice = product.price + (v.price_adjustment || 0);
+                        return sum + (finalPrice * (v.stock_quantity || 0));
+                      }, 0);
+                      const totalValue = (product.price * (product.quantity || 0)) + variantValue;
                       
                       return (
                         <tr key={product.id} className="hover:bg-gray-50">
                           <td className="px-4 py-3">
                             <div className="flex items-center">
                               <img 
-                                src={product.image} 
+                                src={product.image_url || 'https://images.unsplash.com/photo-1560472355-536de3962603?w=400&h=300&fit=crop'} 
                                 alt={product.name}
                                 className="w-10 h-10 rounded-lg object-cover object-top mr-3"
                               />
@@ -387,7 +407,7 @@ export default function Categories() {
                               </div>
                             )}
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-900">{product.quantity + totalVariantStock}</td>
+                          <td className="px-4 py-3 text-sm text-gray-900">{(product.quantity || 0) + totalVariantStock}</td>
                           <td className="px-4 py-3 text-sm text-gray-900">${totalValue.toLocaleString()}</td>
                           <td className="px-4 py-3">
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -411,29 +431,31 @@ export default function Categories() {
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Product Variants</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {getCategoryVariants(selectedCategory.name).map((variant) => {
-                  const variantLocations = getProductLocations(variant.sku);
+                  const product = products.find(p => p.id === variant.product_id);
+                  const fullSku = product ? `${product.sku}${variant.sku_suffix || ''}` : variant.sku_suffix;
+                  const variantLocations = getProductLocations(fullSku || '');
                   return (
                     <div key={variant.id} className="bg-gray-50 rounded-lg p-4">
                       <div className="flex items-center mb-3">
                         <img 
-                          src={variant.image} 
-                          alt={variant.name}
+                          src={variant.image_url || product?.image_url || 'https://images.unsplash.com/photo-1560472355-536de3962603?w=400&h=300&fit=crop'} 
+                          alt={`${variant.variant_name}: ${variant.variant_value}`}
                           className="w-12 h-12 rounded-lg object-cover object-top mr-3"
                         />
                         <div>
-                          <h5 className="font-medium text-gray-900">{variant.name}</h5>
-                          <p className="text-xs text-gray-500">{variant.sku}</p>
+                          <h5 className="font-medium text-gray-900">{variant.variant_name}: {variant.variant_value}</h5>
+                          <p className="text-xs text-gray-500">{fullSku}</p>
                         </div>
                       </div>
                       
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span className="text-gray-600">Stock:</span>
-                          <span className="font-medium text-gray-900">{variant.quantity}</span>
+                          <span className="font-medium text-gray-900">{variant.stock_quantity || 0}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">Price:</span>
-                          <span className="font-medium text-gray-900">${variant.price}</span>
+                          <span className="font-medium text-gray-900">${((product?.price || 0) + (variant.price_adjustment || 0)).toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">Locations:</span>
@@ -441,15 +463,14 @@ export default function Categories() {
                         </div>
                       </div>
                       
-                      <div className="mt-3">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          variant.status === 'In Stock' ? 'bg-green-100 text-green-800' :
-                          variant.status === 'Low Stock' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {variant.status}
-                        </span>
-                      </div>
+                        <div className="mt-3">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            variant.status === 'active' ? 'bg-green-100 text-green-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {variant.status === 'active' ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
                     </div>
                   );
                 })}

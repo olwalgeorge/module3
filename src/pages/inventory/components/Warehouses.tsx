@@ -1,11 +1,16 @@
 
 import { useState } from 'react';
-import { warehouses, locations, productVariants } from '../../../mocks/inventory';
+import { useProductVariants, useProducts } from '../../../hooks/useDatabase';
+import { warehouses, locations } from '../../../mocks/inventory';
 import Button from '../../../components/base/Button';
 import Input from '../../../components/base/Input';
 import Modal from '../../../components/base/Modal';
 
 export default function Warehouses() {
+  // Database hooks for real-time data
+  const { variants: productVariants } = useProductVariants();
+  const { products } = useProducts();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
@@ -85,18 +90,24 @@ export default function Warehouses() {
     return { totalWarehouses, activeWarehouses, totalCapacity, totalStock, utilization };
   };
 
+  const getVariantFullSku = (variant: any) => {
+    const product = products.find(p => p.id === variant.product_id);
+    return product ? `${product.sku}${variant.sku_suffix || ''}` : variant.sku_suffix || '';
+  };
+
   const getLocationStats = () => {
     const totalLocations = locations.length;
     const occupiedLocations = locations.filter(l => l.status === 'Active').length;
     const emptyLocations = locations.filter(l => l.status === 'Empty').length;
-    const variantLocations = locations.filter(l => l.productSku && productVariants.some(v => v.sku === l.productSku)).length;
+    const variantLocations = locations.filter(l => l.productSku && productVariants.some(v => getVariantFullSku(v) === l.productSku)).length;
 
     return { totalLocations, occupiedLocations, emptyLocations, variantLocations };
   };
 
   const getVariantsByLocation = () => {
     return productVariants.map(variant => {
-      const location = locations.find(l => l.productSku === variant.sku);
+      const fullSku = getVariantFullSku(variant);
+      const location = locations.find(l => l.productSku === fullSku);
       return {
         ...variant,
         location: location || null
@@ -313,7 +324,7 @@ export default function Warehouses() {
           {filteredWarehouses.map((warehouse) => {
             const utilization = warehouse.capacity > 0 ? Math.round((warehouse.currentStock / warehouse.capacity) * 100) : 0;
             const warehouseLocations = locations.filter(l => l.warehouseId === warehouse.id);
-            const variantCount = warehouseLocations.filter(l => l.productSku && productVariants.some(v => v.sku === l.productSku)).length;
+            const variantCount = warehouseLocations.filter(l => l.productSku && productVariants.some(v => getVariantFullSku(v) === l.productSku)).length;
             
             return (
               <div key={warehouse.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
@@ -435,8 +446,8 @@ export default function Warehouses() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredLocations.map((location) => {
-                  const isVariant = location.productSku && productVariants.some(v => v.sku === location.productSku);
-                  const variant = isVariant ? productVariants.find(v => v.sku === location.productSku) : null;
+                  const isVariant = location.productSku && productVariants.some(v => getVariantFullSku(v) === location.productSku);
+                  const variant = isVariant ? productVariants.find(v => getVariantFullSku(v) === location.productSku) : null;
                   
                   return (
                     <tr key={location.id} className="hover:bg-gray-50">
@@ -459,11 +470,9 @@ export default function Warehouses() {
                             <div className="text-xs text-gray-500">{location.productSku}</div>
                             {variant && (
                               <div className="flex flex-wrap gap-1 mt-1">
-                                {Object.entries(variant.attributes).slice(0, 2).map(([key, value]) => (
-                                  <span key={key} className="inline-flex px-1 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">
-                                    {key}: {value}
-                                  </span>
-                                ))}
+                                <span className="inline-flex px-1 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">
+                                  {variant.variant_name}: {variant.variant_value}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -532,24 +541,22 @@ export default function Warehouses() {
                     <td className="px-4 py-3">
                       <div className="flex items-center">
                         <img 
-                          src={variant.image} 
-                          alt={variant.name}
+                          src={variant.image_url || 'https://images.unsplash.com/photo-1560472355-536de3962603?w=400&h=300&fit=crop'} 
+                          alt={`${variant.variant_name}: ${variant.variant_value}`}
                           className="w-10 h-10 rounded-lg object-cover object-top mr-3"
                         />
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{variant.name}</div>
-                          <div className="text-xs text-gray-500">{variant.sku}</div>
+                          <div className="text-sm font-medium text-gray-900">{variant.variant_name}: {variant.variant_value}</div>
+                          <div className="text-xs text-gray-500">{getVariantFullSku(variant)}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{variant.parentProduct}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{products.find(p => p.id === variant.product_id)?.name}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
-                        {Object.entries(variant.attributes).map(([key, value]) => (
-                          <span key={key} className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
-                            {key}: {value}
-                          </span>
-                        ))}
+                        <span className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                          {variant.variant_name}: {variant.variant_value}
+                        </span>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
@@ -558,10 +565,10 @@ export default function Warehouses() {
                     <td className="px-4 py-3 text-sm text-gray-900">
                       {variant.location ? variant.location.warehouseName : '-'}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{variant.quantity}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{variant.stock_quantity || 0}</td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(variant.status)}`}>
-                        {variant.status}
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${variant.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                        {variant.status === 'active' ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                   </tr>

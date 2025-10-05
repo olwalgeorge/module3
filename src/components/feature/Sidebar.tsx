@@ -47,7 +47,10 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
         {menuItems.map((item) => (
           <button
             key={item.id}
-            onClick={() => onTabChange(item.id)}
+            onClick={() => {
+              console.log('Sidebar clicked:', item.id);
+              onTabChange(item.id);
+            }}
             className={`w-full flex items-center px-4 py-3 text-left hover:bg-gray-800 transition-colors cursor-pointer ${
               activeTab === item.id ? 'bg-blue-600 border-r-4 border-blue-400' : ''
             }`}

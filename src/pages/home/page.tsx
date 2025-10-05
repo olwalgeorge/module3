@@ -15,9 +15,16 @@ import Reports from '../inventory/components/Reports';
 import Settings from '../inventory/components/Settings';
 import Accounting from '../inventory/components/Accounting';
 import UserManagement from '../inventory/components/UserManagement';
+import { useUsers } from '../../hooks/useDatabase';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  console.log('Home component activeTab:', activeTab);
+  
+  // Get database connection status
+  const { users, loading, error } = useUsers();
+  const isDatabaseConnected = !error && !loading;
+  const userCount = users?.length || 0;
 
   const getPageContent = () => {
     switch (activeTab) {
@@ -38,6 +45,7 @@ export default function Home() {
       case 'warehouses':
         return <Warehouses />;
       case 'crm':
+        console.log('Rendering CRM component from home page');
         return <CRM />;
       case 'reports':
         return <Reports />;
@@ -72,22 +80,31 @@ export default function Home() {
   };
 
   const getPageSubtitle = () => {
-    switch (activeTab) {
-      case 'dashboard': return 'Overview of your inventory system';
-      case 'products': return 'Manage your inventory items';
-      case 'purchases': return 'Manage supplier purchase orders and procurement';
-      case 'movements': return 'Track all inventory stock changes';
-      case 'categories': return 'Organize product categories';
-      case 'suppliers': return 'Manage supplier relationships';
-      case 'orders': return 'Track customer orders';
-      case 'warehouses': return 'Manage warehouse facilities and storage locations';
-      case 'crm': return 'Manage customer relationships, leads, and deals';
-      case 'reports': return 'Analytics and insights';
-      case 'accounting': return 'Complete financial management with taxes, costing, and multi-currency support';
-      case 'users': return 'Manage users, roles, departments, and permissions';
-      case 'settings': return 'System configuration';
-      default: return 'Overview of your inventory system';
+    const baseSubtitles = {
+      dashboard: 'Overview of your inventory system',
+      products: 'Manage your inventory items',
+      purchases: 'Manage supplier purchase orders and procurement',
+      movements: 'Track all inventory stock changes',
+      categories: 'Organize product categories',
+      suppliers: 'Manage supplier relationships',
+      orders: 'Track customer orders',
+      warehouses: 'Manage warehouse facilities and storage locations',
+      crm: 'Manage customer relationships, leads, and deals',
+      reports: 'Analytics and insights',
+      accounting: 'Complete financial management with taxes, costing, and multi-currency support',
+      users: `Manage users, roles, departments, and permissions${isDatabaseConnected ? ` • ${userCount} users` : ''}`,
+      settings: 'System configuration'
+    };
+
+    const subtitle = baseSubtitles[activeTab as keyof typeof baseSubtitles] || baseSubtitles.dashboard;
+    
+    // Add database status for dashboard
+    if (activeTab === 'dashboard') {
+      const status = isDatabaseConnected ? `• Database Connected • ${userCount} users registered` : '• Database Connecting...';
+      return `${subtitle} ${status}`;
     }
+    
+    return subtitle;
   };
 
   return (

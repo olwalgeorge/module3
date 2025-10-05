@@ -1,11 +1,21 @@
 
 import { useState } from 'react';
-import { products, productVariants, categories, suppliers, orders, warehouses, locations, stockMovements } from '../../../mocks/inventory';
-import { customers, deals, crmStats } from '../../../mocks/crm';
+import { useProducts, useProductVariants, useCategories, useOrders, useSuppliers, useCustomers } from '../../../hooks/useDatabase';
+// Note: warehouses and locations are infrastructure/configuration data that don't change frequently
+// and don't have corresponding database tables yet, so we keep them as mock data for now
+import { warehouses, locations } from '../../../mocks/inventory';
 import Button from '../../../components/base/Button';
 import Input from '../../../components/base/Input';
 
 export default function Reports() {
+  // Database hooks for real-time data
+  const { products } = useProducts();
+  const { variants: productVariants } = useProductVariants();
+  const { categories } = useCategories();
+  const { orders } = useOrders();
+  const { suppliers } = useSuppliers();
+  const { customers } = useCustomers();
+  
   const [selectedReport, setSelectedReport] = useState('overview');
   const [dateRange, setDateRange] = useState('30');
   const [selectedWarehouse, setSelectedWarehouse] = useState('all');
@@ -22,19 +32,19 @@ export default function Reports() {
   const getReportContent = () => {
     switch (selectedReport) {
       case 'overview':
-        return <OverviewReport dateRange={dateRange} />;
+        return <OverviewReport dateRange={dateRange} products={products} productVariants={productVariants} orders={orders} />;
       case 'inventory':
-        return <InventoryReport dateRange={dateRange} selectedWarehouse={selectedWarehouse} />;
+        return <InventoryReport selectedWarehouse={selectedWarehouse} products={products} categories={categories} />;
       case 'sales':
-        return <SalesReport dateRange={dateRange} />;
+        return <SalesReport dateRange={dateRange} orders={orders} customers={customers} />;
       case 'customers':
-        return <CustomerReport dateRange={dateRange} />;
+        return <CustomerReport dateRange={dateRange} customers={customers} />;
       case 'suppliers':
-        return <SupplierReport dateRange={dateRange} />;
+        return <SupplierReport dateRange={dateRange} suppliers={suppliers} />;
       case 'warehouse':
-        return <WarehouseReport dateRange={dateRange} selectedWarehouse={selectedWarehouse} />;
+        return <WarehouseReport selectedWarehouse={selectedWarehouse} />;
       default:
-        return <OverviewReport dateRange={dateRange} />;
+        return <OverviewReport dateRange={dateRange} products={products} productVariants={productVariants} orders={orders} />;
     }
   };
 
@@ -150,16 +160,20 @@ export default function Reports() {
 }
 
 // Overview Report Component
-function OverviewReport({ dateRange }: any) {
+function OverviewReport({ dateRange, products, productVariants, orders }: any) {
   const totalProducts = products.length + productVariants.length;
-  const totalInventoryValue = products.reduce((sum, p) => sum + (p.price * p.quantity), 0) + 
-                             productVariants.reduce((sum, v) => sum + (v.price * v.quantity), 0);
+  const totalInventoryValue = products.reduce((sum: number, p: any) => sum + (p.price * (p.quantity || 0)), 0) + 
+                             productVariants.reduce((sum: number, v: any) => {
+                               const product = products.find((p: any) => p.id === v.product_id);
+                               const finalPrice = product ? product.price + (v.price_adjustment || 0) : 0;
+                               return sum + (finalPrice * (v.stock_quantity || 0));
+                             }, 0);
   const totalOrders = orders.length;
-  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
-  const lowStockItems = products.filter(p => p.quantity <= p.minStock).length + 
-                       productVariants.filter(v => v.quantity <= v.minStock).length;
-  const outOfStockItems = products.filter(p => p.quantity === 0).length + 
-                         productVariants.filter(v => v.quantity === 0).length;
+  const totalRevenue = orders.reduce((sum: number, order: any) => sum + (order.total_amount || 0), 0);
+  const lowStockItems = products.filter((p: any) => (p.quantity || 0) <= (p.min_stock_level || 0)).length + 
+                       productVariants.filter((v: any) => (v.stock_quantity || 0) <= 5).length; // Default min stock for variants
+  const outOfStockItems = products.filter((p: any) => (p.quantity || 0) === 0).length + 
+                         productVariants.filter((v: any) => (v.stock_quantity || 0) === 0).length;
 
   return (
     <div className="p-6 space-y-6">
@@ -258,9 +272,9 @@ function OverviewReport({ dateRange }: any) {
           <h4 className="text-lg font-semibold text-gray-900 mb-4">Top Products by Value</h4>
           <div className="space-y-3">
             {products
-              .sort((a, b) => (b.price * b.quantity) - (a.price * a.quantity))
+              .sort((a: any, b: any) => (b.price * b.quantity) - (a.price * a.quantity))
               .slice(0, 5)
-              .map((product, index) => (
+              .map((product: any, index: any) => (
                 <div key={product.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center">
                     <span className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium mr-3">
@@ -313,16 +327,16 @@ function OverviewReport({ dateRange }: any) {
 }
 
 // Inventory Report Component
-function InventoryReport({ dateRange, selectedWarehouse }: any) {
+function InventoryReport({ selectedWarehouse, products, categories }: any) {
   const filteredProducts = selectedWarehouse === 'all' ? products : 
-    products.filter(p => {
-      const productLocations = locations.filter(l => l.productSku === p.sku);
-      return productLocations.some(l => l.warehouseId.toString() === selectedWarehouse);
+    products.filter((p: any) => {
+      const productLocations = locations.filter((l: any) => l.productSku === p.sku);
+      return productLocations.some((l: any) => l.warehouseId.toString() === selectedWarehouse);
     });
 
-  const totalValue = filteredProducts.reduce((sum, p) => sum + (p.price * p.quantity), 0);
-  const lowStockCount = filteredProducts.filter(p => p.quantity <= p.minStock).length;
-  const outOfStockCount = filteredProducts.filter(p => p.quantity === 0).length;
+  const totalValue = filteredProducts.reduce((sum: any, p: any) => sum + (p.price * p.quantity), 0);
+  const lowStockCount = filteredProducts.filter((p: any) => p.quantity <= p.minStock).length;
+  const outOfStockCount = filteredProducts.filter((p: any) => p.quantity === 0).length;
 
   return (
     <div className="p-6 space-y-6">
@@ -368,10 +382,10 @@ function InventoryReport({ dateRange, selectedWarehouse }: any) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {categories.map((category) => {
-                const categoryProducts = filteredProducts.filter(p => p.category === category.name);
-                const totalQuantity = categoryProducts.reduce((sum, p) => sum + p.quantity, 0);
-                const categoryValue = categoryProducts.reduce((sum, p) => sum + (p.price * p.quantity), 0);
+              {categories.map((category: any) => {
+                const categoryProducts = filteredProducts.filter((p: any) => p.category === category.name);
+                const totalQuantity = categoryProducts.reduce((sum: any, p: any) => sum + p.quantity, 0);
+                const categoryValue = categoryProducts.reduce((sum: any, p: any) => sum + (p.price * p.quantity), 0);
                 const avgPrice = categoryProducts.length > 0 ? categoryValue / totalQuantity : 0;
                 
                 return (
@@ -393,9 +407,9 @@ function InventoryReport({ dateRange, selectedWarehouse }: any) {
 }
 
 // Sales Report Component
-function SalesReport({ dateRange }: any) {
-  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
-  const completedOrders = orders.filter(order => order.status === 'Completed');
+function SalesReport({ dateRange, orders, customers }: any) {
+  const totalRevenue = orders.reduce((sum: any, order: any) => sum + order.total, 0);
+  const completedOrders = orders.filter((order: any) => order.status === 'Completed');
   const avgOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
   const conversionRate = orders.length > 0 ? (completedOrders.length / orders.length) * 100 : 0;
 
@@ -432,7 +446,7 @@ function SalesReport({ dateRange }: any) {
           <h4 className="text-lg font-semibold text-gray-900 mb-4">Orders by Status</h4>
           <div className="space-y-3">
             {['Completed', 'Processing', 'Shipped', 'Pending', 'Cancelled'].map((status) => {
-              const statusOrders = orders.filter(order => order.status === status);
+              const statusOrders = orders.filter((order: any) => order.status === status);
               const percentage = orders.length > 0 ? (statusOrders.length / orders.length) * 100 : 0;
               
               return (
@@ -460,9 +474,9 @@ function SalesReport({ dateRange }: any) {
           <h4 className="text-lg font-semibold text-gray-900 mb-4">Top Customers by Revenue</h4>
           <div className="space-y-3">
             {customers
-              .sort((a, b) => b.totalValue - a.totalValue)
+              .sort((a: any, b: any) => b.totalValue - a.totalValue)
               .slice(0, 5)
-              .map((customer, index) => (
+              .map((customer: any, index: any) => (
                 <div key={customer.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center">
                     <span className="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-medium mr-3">
@@ -484,9 +498,9 @@ function SalesReport({ dateRange }: any) {
 }
 
 // Customer Report Component
-function CustomerReport({ dateRange }: any) {
-  const activeCustomers = customers.filter(c => c.status === 'Active').length;
-  const totalCustomerValue = customers.reduce((sum, c) => sum + c.totalValue, 0);
+function CustomerReport({ dateRange, customers }: any) {
+  const activeCustomers = customers.filter((c: any) => c.status === 'Active').length;
+  const totalCustomerValue = customers.reduce((sum: any, c: any) => sum + c.totalValue, 0);
   const avgCustomerValue = customers.length > 0 ? totalCustomerValue / customers.length : 0;
   const retentionRate = customers.length > 0 ? (activeCustomers / customers.length) * 100 : 0;
 
@@ -523,7 +537,7 @@ function CustomerReport({ dateRange }: any) {
           <h4 className="text-lg font-semibold text-gray-900 mb-4">Customer by Type</h4>
           <div className="space-y-3">
             {['Enterprise', 'SMB', 'Startup'].map((type) => {
-              const typeCustomers = customers.filter(c => c.customerType === type);
+              const typeCustomers = customers.filter((c: any) => c.customerType === type);
               const percentage = customers.length > 0 ? (typeCustomers.length / customers.length) * 100 : 0;
               
               return (
@@ -543,7 +557,7 @@ function CustomerReport({ dateRange }: any) {
           <h4 className="text-lg font-semibold text-gray-900 mb-4">Customer by Industry</h4>
           <div className="space-y-3">
             {['Technology', 'Marketing', 'Healthcare', 'Finance'].map((industry) => {
-              const industryCustomers = customers.filter(c => c.industry === industry);
+              const industryCustomers = customers.filter((c: any) => c.industry === industry);
               const percentage = customers.length > 0 ? (industryCustomers.length / customers.length) * 100 : 0;
               
               return (
@@ -564,9 +578,9 @@ function CustomerReport({ dateRange }: any) {
 }
 
 // Supplier Report Component
-function SupplierReport({ dateRange }: any) {
-  const activeSuppliers = suppliers.filter(s => s.status === 'Active').length;
-  const totalSupplierValue = suppliers.reduce((sum, s) => sum + s.totalValue, 0);
+function SupplierReport({ dateRange, suppliers }: any) {
+  const activeSuppliers = suppliers.filter((s: any) => s.status === 'Active').length;
+  const totalSupplierValue = suppliers.reduce((sum: any, s: any) => sum + s.totalValue, 0);
   const avgSupplierValue = suppliers.length > 0 ? totalSupplierValue / suppliers.length : 0;
 
   return (
@@ -612,9 +626,9 @@ function SupplierReport({ dateRange }: any) {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {suppliers
-                .sort((a, b) => b.totalValue - a.totalValue)
+                .sort((a: any, b: any) => b.totalValue - a.totalValue)
                 .slice(0, 10)
-                .map((supplier) => (
+                .map((supplier: any) => (
                   <tr key={supplier.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
                       <div>
@@ -645,7 +659,7 @@ function SupplierReport({ dateRange }: any) {
 }
 
 // Warehouse Report Component
-function WarehouseReport({ dateRange, selectedWarehouse }: any) {
+function WarehouseReport({ selectedWarehouse }: any) {
   const filteredWarehouses = selectedWarehouse === 'all' ? warehouses : 
     warehouses.filter(w => w.id.toString() === selectedWarehouse);
 

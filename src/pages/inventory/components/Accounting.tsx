@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useCurrency } from '../../../hooks/useCurrency';
-import { currencies, currencySettings, exchangeRateHistory } from '../../../mocks/currencies';
+import { currencySettings, exchangeRateHistory } from '../../../mocks/currencies';
 import Button from '../../../components/base/Button';
 import Input from '../../../components/base/Input';
 import Modal from '../../../components/base/Modal';
@@ -185,7 +185,6 @@ export default function Accounting() {
   const [isAddCurrencyModalOpen, setIsAddCurrencyModalOpen] = useState(false);
   const [isRateHistoryModalOpen, setIsRateHistoryModalOpen] = useState(false);
   const [isCurrencySettingsModalOpen, setIsCurrencySettingsModalOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [newTransaction, setNewTransaction] = useState<Partial<Transaction>>({
     type: 'Income',
     category: '',
@@ -312,10 +311,6 @@ export default function Accounting() {
 
   const totalAssets = mockAccounts
     .filter(a => a.type === 'Asset')
-    .reduce((sum, a) => sum + convertCurrency(a.balance, a.currency, displayCurrency), 0);
-
-  const totalLiabilities = mockAccounts
-    .filter(a => a.type === 'Liability')
     .reduce((sum, a) => sum + convertCurrency(a.balance, a.currency, displayCurrency), 0);
 
   const calculateTaxAmount = (amount: number, taxRate: number) => {
@@ -973,7 +968,7 @@ export default function Accounting() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
                       <button 
-                        onClick={() => setSelectedTransaction(transaction)}
+                        onClick={() => console.log('View transaction:', transaction)}
                         className="w-8 h-8 flex items-center justify-center text-blue-600 hover:text-blue-900 cursor-pointer"
                         title="View Transaction"
                       >

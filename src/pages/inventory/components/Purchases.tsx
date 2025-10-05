@@ -1,6 +1,10 @@
 
 import { useState } from 'react';
-import { purchases, suppliers, warehouses, locations, products } from '../../../mocks/inventory';
+import { useProducts, useSuppliers } from '../../../hooks/useDatabase';
+// Warehouses and locations remain as mock data - these are infrastructure/configuration data
+// without corresponding database tables (warehouse details: capacity, manager, address;
+// location details: zone, aisle, shelf coordinates)
+import { warehouses, locations } from '../../../mocks/inventory';
 import { useCurrency } from '../../../hooks/useCurrency';
 import Button from '../../../components/base/Button';
 import Input from '../../../components/base/Input';
@@ -28,6 +32,13 @@ interface NewPurchase {
 }
 
 export default function Purchases() {
+  // Database hooks for real-time data
+  const { products } = useProducts();
+  const { suppliers } = useSuppliers();
+  
+  // For now, using mock data for purchases since purchase orders may not be fully implemented in database
+  const purchases: any[] = []; // This would be replaced with usePurchases() when available
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedSupplier, setSelectedSupplier] = useState('all');
@@ -272,7 +283,7 @@ export default function Purchases() {
           <div>
             <select
               value={displayCurrency}
-              onChange={(e) => {/* Handle currency change */}}
+              onChange={() => {/* Handle currency change - TODO: implement currency switching */}}
               className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"
             >
               {availableCurrencies.map(currency => (
@@ -379,7 +390,7 @@ export default function Purchases() {
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center mr-3">
                           <span className="text-white text-sm font-medium">
-                            {purchase.supplierName.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                            {purchase.supplierName.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                           </span>
                         </div>
                         <div>

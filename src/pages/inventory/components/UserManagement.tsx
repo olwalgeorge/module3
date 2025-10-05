@@ -1,10 +1,32 @@
 import { useState } from 'react';
-import { users, roles, departments, userStats, permissions } from '../../../mocks/users';
+import { useUsers, useRoles, useDepartments, usePermissions } from '../../../hooks/useDatabase';
 import Button from '../../../components/base/Button';
 import Input from '../../../components/base/Input';
 import Modal from '../../../components/base/Modal';
 
 export default function UserManagement() {
+  // Database hooks for real-time data
+  const { users, loading: usersLoading } = useUsers();
+  const { roles, loading: rolesLoading } = useRoles();
+  const { departments, loading: departmentsLoading } = useDepartments();
+  const { permissions, loading: permissionsLoading } = usePermissions();
+
+  // Calculate user statistics from database data
+  const userStats = {
+    totalUsers: users?.length || 0,
+    activeUsers: users?.filter((user: any) => user.status === 'active').length || 0,
+    inactiveUsers: users?.filter((user: any) => user.status === 'inactive').length || 0,
+    newUsersThisMonth: users?.filter((user: any) => {
+      const createdAt = new Date(user.created_at);
+      const now = new Date();
+      return createdAt.getMonth() === now.getMonth() && createdAt.getFullYear() === now.getFullYear();
+    }).length || 0,
+    totalRoles: roles?.length || 0,
+    totalDepartments: departments?.length || 0,
+    averageLoginFrequency: 2.5, // This would need additional data to calculate properly
+    lastUserAdded: users?.length > 0 ? users[users.length - 1]?.created_at || new Date().toISOString() : new Date().toISOString()
+  };
+  
   const [activeTab, setActiveTab] = useState('users');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
@@ -15,15 +37,15 @@ export default function UserManagement() {
   const getTabContent = () => {
     switch (activeTab) {
       case 'users':
-        return <UsersTab searchTerm={searchTerm} selectedFilter={selectedFilter} onView={handleView} />;
+        return <UsersTab searchTerm={searchTerm} selectedFilter={selectedFilter} onView={handleView} users={users} loading={usersLoading} />;
       case 'roles':
-        return <RolesTab searchTerm={searchTerm} selectedFilter={selectedFilter} onView={handleView} />;
+        return <RolesTab searchTerm={searchTerm} onView={handleView} roles={roles} loading={rolesLoading} />;
       case 'departments':
-        return <DepartmentsTab searchTerm={searchTerm} selectedFilter={selectedFilter} onView={handleView} />;
+        return <DepartmentsTab searchTerm={searchTerm} onView={handleView} departments={departments} loading={departmentsLoading} />;
       case 'permissions':
-        return <PermissionsTab searchTerm={searchTerm} selectedFilter={selectedFilter} onView={handleView} />;
+        return <PermissionsTab searchTerm={searchTerm} onView={handleView} permissions={permissions} loading={permissionsLoading} />;
       default:
-        return <UsersTab searchTerm={searchTerm} selectedFilter={selectedFilter} onView={handleView} />;
+        return <UsersTab searchTerm={searchTerm} selectedFilter={selectedFilter} onView={handleView} users={users} loading={usersLoading} />;
     }
   };
 
@@ -207,7 +229,14 @@ export default function UserManagement() {
         title={`Add New ${activeTab.slice(0, -1).charAt(0).toUpperCase() + activeTab.slice(1, -1)}`}
         size="lg"
       >
-        <AddForm activeTab={activeTab} onClose={() => setIsAddModalOpen(false)} />
+        <AddForm 
+          activeTab={activeTab} 
+          onClose={() => setIsAddModalOpen(false)} 
+          roles={roles}
+          departments={departments}
+          permissions={permissions}
+          users={users}
+        />
       </Modal>
 
       {/* View Modal */}
@@ -224,21 +253,29 @@ export default function UserManagement() {
 }
 
 // Users Tab Component
-function UsersTab({ searchTerm, selectedFilter, onView }: any) {
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.department.toLowerCase().includes(searchTerm.toLowerCase());
+function UsersTab({ searchTerm, selectedFilter, onView, users = [], loading = false }: any) {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-gray-500">Loading users...</div>
+      </div>
+    );
+  }
+
+  const filteredUsers = users.filter((user: any) => {
+    const matchesSearch = user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.department?.name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = selectedFilter === 'all' || 
-                         user.status.toLowerCase() === selectedFilter ||
-                         user.role.toLowerCase().includes(selectedFilter.toLowerCase());
+                         user.status?.toLowerCase() === selectedFilter ||
+                         user.role?.name?.toLowerCase().includes(selectedFilter.toLowerCase());
     return matchesSearch && matchesFilter;
   });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Active': return 'bg-green-100 text-green-800';
-      case 'Inactive': return 'bg-red-100 text-red-800';
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'inactive': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -247,9 +284,7 @@ function UsersTab({ searchTerm, selectedFilter, onView }: any) {
     switch (role) {
       case 'Administrator': return 'bg-red-100 text-red-800';
       case 'Manager': return 'bg-blue-100 text-blue-800';
-      case 'Warehouse Staff': return 'bg-green-100 text-green-800';
-      case 'Sales Representative': return 'bg-purple-100 text-purple-800';
-      case 'Accountant': return 'bg-yellow-100 text-yellow-800';
+      case 'Staff': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -269,40 +304,40 @@ function UsersTab({ searchTerm, selectedFilter, onView }: any) {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {filteredUsers.map((user) => (
+          {filteredUsers.map((user: any) => (
             <tr key={user.id} className="hover:bg-gray-50">
               <td className="px-4 py-3">
                 <div className="flex items-center">
-                  <img 
-                    src={user.avatar} 
-                    alt={user.name}
-                    className="w-10 h-10 rounded-full object-cover object-top mr-3"
-                  />
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                    <span className="text-blue-600 font-medium">
+                      {user.full_name?.charAt(0) || 'U'}
+                    </span>
+                  </div>
                   <div>
-                    <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                    <div className="text-xs text-gray-500">{user.employeeId}</div>
+                    <div className="text-sm font-medium text-gray-900">{user.full_name || 'N/A'}</div>
+                    <div className="text-xs text-gray-500">{user.employee_id || 'N/A'}</div>
                   </div>
                 </div>
               </td>
               <td className="px-4 py-3">
-                <div className="text-sm text-gray-900">{user.email}</div>
-                <div className="text-xs text-gray-500">{user.phone}</div>
+                <div className="text-sm text-gray-900">{user.email || 'N/A'}</div>
+                <div className="text-xs text-gray-500">{user.phone || 'N/A'}</div>
               </td>
               <td className="px-4 py-3">
-                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleColor(user.role)}`}>
-                  {user.role}
+                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleColor(user.role?.name || 'Staff')}`}>
+                  {user.role?.name || 'Staff'}
                 </span>
               </td>
               <td className="px-4 py-3">
-                <div className="text-sm text-gray-900">{user.department}</div>
-                <div className="text-xs text-gray-500">{user.location}</div>
+                <div className="text-sm text-gray-900">{user.department?.name || 'N/A'}</div>
+                <div className="text-xs text-gray-500">{user.location || 'N/A'}</div>
               </td>
               <td className="px-4 py-3 text-sm text-gray-900">
-                {new Date(user.lastLogin).toLocaleDateString()}
+                {user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never'}
               </td>
               <td className="px-4 py-3">
-                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(user.status)}`}>
-                  {user.status}
+                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(user.status || 'inactive')}`}>
+                  {user.status?.charAt(0).toUpperCase() + user.status?.slice(1) || 'Inactive'}
                 </span>
               </td>
               <td className="px-4 py-3">
@@ -325,15 +360,28 @@ function UsersTab({ searchTerm, selectedFilter, onView }: any) {
           ))}
         </tbody>
       </table>
+      {filteredUsers.length === 0 && (
+        <div className="text-center py-12 text-gray-500">
+          No users found matching your criteria.
+        </div>
+      )}
     </div>
   );
 }
 
 // Roles Tab Component
-function RolesTab({ searchTerm, selectedFilter, onView }: any) {
-  const filteredRoles = roles.filter(role => {
-    const matchesSearch = role.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         role.description.toLowerCase().includes(searchTerm.toLowerCase());
+function RolesTab({ searchTerm, onView, roles = [], loading = false }: any) {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-gray-500">Loading roles...</div>
+      </div>
+    );
+  }
+
+  const filteredRoles = roles.filter((role: any) => {
+    const matchesSearch = role.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         role.description?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
@@ -353,30 +401,23 @@ function RolesTab({ searchTerm, selectedFilter, onView }: any) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {filteredRoles.map((role) => (
+      {filteredRoles.map((role: any) => (
         <div key={role.id} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${getRoleColor(role.color)}`}>
-              {role.name}
+            <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${getRoleColor('blue')}`}>
+              {role.name || 'Unnamed Role'}
             </span>
-            <span className="text-sm text-gray-500">{role.userCount} users</span>
+            <span className="text-sm text-gray-500">0 users</span>
           </div>
           
-          <p className="text-gray-600 text-sm mb-4">{role.description}</p>
+          <p className="text-gray-600 text-sm mb-4">{role.description || 'No description available'}</p>
           
           <div className="mb-4">
             <h4 className="text-xs font-medium text-gray-500 uppercase mb-2">Permissions</h4>
             <div className="flex flex-wrap gap-1">
-              {role.permissions.slice(0, 3).map((permission) => (
-                <span key={permission} className="inline-flex px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
-                  {permission}
-                </span>
-              ))}
-              {role.permissions.length > 3 && (
-                <span className="inline-flex px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
-                  +{role.permissions.length - 3} more
-                </span>
-              )}
+              <span className="inline-flex px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
+                View permissions
+              </span>
             </div>
           </div>
           
@@ -393,21 +434,34 @@ function RolesTab({ searchTerm, selectedFilter, onView }: any) {
           </div>
         </div>
       ))}
+      {filteredRoles.length === 0 && (
+        <div className="col-span-full text-center py-12 text-gray-500">
+          No roles found matching your criteria.
+        </div>
+      )}
     </div>
   );
 }
 
 // Departments Tab Component
-function DepartmentsTab({ searchTerm, selectedFilter, onView }: any) {
-  const filteredDepartments = departments.filter(dept => {
-    const matchesSearch = dept.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         dept.manager.toLowerCase().includes(searchTerm.toLowerCase());
+function DepartmentsTab({ searchTerm, onView, departments = [], loading = false }: any) {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-gray-500">Loading departments...</div>
+      </div>
+    );
+  }
+
+  const filteredDepartments = departments.filter((dept: any) => {
+    const matchesSearch = dept.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         dept.manager_name?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {filteredDepartments.map((dept) => (
+      {filteredDepartments.map((dept: any) => (
         <div key={dept.id} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center">
@@ -415,16 +469,19 @@ function DepartmentsTab({ searchTerm, selectedFilter, onView }: any) {
                 <i className="ri-building-line text-blue-600"></i>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">{dept.name}</h3>
-                <p className="text-sm text-gray-500">{dept.userCount} members</p>
+                <h3 className="text-lg font-semibold text-gray-900">{dept.name || 'Unnamed Department'}</h3>
+                <p className="text-sm text-gray-500">0 members</p>
               </div>
             </div>
           </div>
           
           <div className="mb-4">
             <p className="text-sm text-gray-600">
-              <span className="font-medium">Manager:</span> {dept.manager}
+              <span className="font-medium">Manager:</span> {dept.manager_name || 'Not assigned'}
             </p>
+            {dept.description && (
+              <p className="text-sm text-gray-600 mt-2">{dept.description}</p>
+            )}
           </div>
           
           <div className="flex space-x-2">
@@ -440,15 +497,28 @@ function DepartmentsTab({ searchTerm, selectedFilter, onView }: any) {
           </div>
         </div>
       ))}
+      {filteredDepartments.length === 0 && (
+        <div className="col-span-full text-center py-12 text-gray-500">
+          No departments found matching your criteria.
+        </div>
+      )}
     </div>
   );
 }
 
 // Permissions Tab Component
-function PermissionsTab({ searchTerm, selectedFilter, onView }: any) {
-  const filteredPermissions = permissions.filter(permission => {
-    const matchesSearch = permission.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         permission.description.toLowerCase().includes(searchTerm.toLowerCase());
+function PermissionsTab({ searchTerm, onView, permissions = [], loading = false }: any) {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-gray-500">Loading permissions...</div>
+      </div>
+    );
+  }
+
+  const filteredPermissions = permissions.filter((permission: any) => {
+    const matchesSearch = permission.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         permission.description?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
@@ -464,20 +534,20 @@ function PermissionsTab({ searchTerm, selectedFilter, onView }: any) {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {filteredPermissions.map((permission) => (
+          {filteredPermissions.map((permission: any) => (
             <tr key={permission.id} className="hover:bg-gray-50">
               <td className="px-4 py-3">
                 <div className="flex items-center">
                   <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
                     <i className="ri-key-line text-blue-600 text-sm"></i>
                   </div>
-                  <div className="text-sm font-medium text-gray-900">{permission.name}</div>
+                  <div className="text-sm font-medium text-gray-900">{permission.name || 'Unnamed Permission'}</div>
                 </div>
               </td>
-              <td className="px-4 py-3 text-sm text-gray-600">{permission.description}</td>
+              <td className="px-4 py-3 text-sm text-gray-600">{permission.description || 'No description available'}</td>
               <td className="px-4 py-3">
                 <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                  {permission.id}
+                  {permission.module || 'General'}
                 </span>
               </td>
               <td className="px-4 py-3">
@@ -497,12 +567,17 @@ function PermissionsTab({ searchTerm, selectedFilter, onView }: any) {
           ))}
         </tbody>
       </table>
+      {filteredPermissions.length === 0 && (
+        <div className="text-center py-12 text-gray-500">
+          No permissions found matching your criteria.
+        </div>
+      )}
     </div>
   );
 }
 
 // Add Form Component
-function AddForm({ activeTab, onClose }: any) {
+function AddForm({ activeTab, onClose, roles = [], departments = [], permissions = [], users = [] }: any) {
   return (
     <div className="space-y-4">
       {activeTab === 'users' && (
@@ -519,7 +594,8 @@ function AddForm({ activeTab, onClose }: any) {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
               <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8">
-                {roles.map(role => (
+                <option value="">Select a role</option>
+                {roles.map((role: any) => (
                   <option key={role.id} value={role.id}>{role.name}</option>
                 ))}
               </select>
@@ -527,7 +603,8 @@ function AddForm({ activeTab, onClose }: any) {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
               <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8">
-                {departments.map(dept => (
+                <option value="">Select a department</option>
+                {departments.map((dept: any) => (
                   <option key={dept.id} value={dept.id}>{dept.name}</option>
                 ))}
               </select>
@@ -562,7 +639,7 @@ function AddForm({ activeTab, onClose }: any) {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">Permissions</label>
             <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
-              {permissions.map(permission => (
+              {permissions.map((permission: any) => (
                 <label key={permission.id} className="flex items-center">
                   <input type="checkbox" className="mr-2" />
                   <span className="text-sm text-gray-700">{permission.name}</span>
@@ -579,8 +656,9 @@ function AddForm({ activeTab, onClose }: any) {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Manager</label>
             <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8">
-              {users.map(user => (
-                <option key={user.id} value={user.id}>{user.name}</option>
+              <option value="">Select a manager</option>
+              {users.map((user: any) => (
+                <option key={user.id} value={user.id}>{user.full_name}</option>
               ))}
             </select>
           </div>

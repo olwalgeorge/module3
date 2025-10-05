@@ -1,11 +1,14 @@
 
 import { useState } from 'react';
-import { suppliers } from '../../../mocks/inventory';
+import { useSuppliers } from '../../../hooks/useDatabase';
 import Button from '../../../components/base/Button';
 import Input from '../../../components/base/Input';
 import Modal from '../../../components/base/Modal';
 
 export default function Suppliers() {
+  // Database hooks for real-time data
+  const { suppliers } = useSuppliers();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);

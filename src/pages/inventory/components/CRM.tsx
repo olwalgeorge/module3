@@ -7,8 +7,10 @@ import Input from '../../../components/base/Input';
 import Modal from '../../../components/base/Modal';
 
 export default function CRM() {
+  console.log('CRM component is rendering');
   // Database hooks for real-time data
-  const { customers, loading: customersLoading, addCustomer, updateCustomer } = useCustomers();
+  const { customers, loading: customersLoading, error } = useCustomers();
+  console.log('CRM data:', { customers, loading: customersLoading, error });
   const [activeTab, setActiveTab] = useState('customers');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
@@ -71,6 +73,25 @@ export default function CRM() {
     }
   };
 
+  // Loading state check - same pattern as ProductList
+  if (customersLoading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">CRM</h2>
+            <p className="text-gray-600">Loading customer data...</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <span className="ml-3 text-gray-600">Loading customers from database...</span>
+        </div>
+      </div>
+    );
+  }
+
+  console.log('CRM about to render main UI');
   return (
     <div className="p-6 space-y-6">
       {/* CRM Statistics */}
@@ -210,7 +231,7 @@ export default function CRM() {
         title={`Add New ${activeTab.slice(0, -1).charAt(0).toUpperCase() + activeTab.slice(1, -1)}`}
         size="lg"
       >
-        <AddForm activeTab={activeTab} onClose={() => setIsAddModalOpen(false)} />
+        <AddForm activeTab={activeTab} customers={customers} onClose={() => setIsAddModalOpen(false)} />
       </Modal>
 
       {/* View Modal */}
@@ -228,11 +249,25 @@ export default function CRM() {
 
 // Customers Tab Component
 function CustomersTab({ searchTerm, selectedFilter, onView, customers, loading }: any) {
+  console.log('CustomersTab rendering with:', { customers, loading, customersLength: customers?.length });
+  
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
         <span className="ml-3 text-gray-600">Loading customers...</span>
+      </div>
+    );
+  }
+
+  if (!customers || customers.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <i className="ri-user-line text-4xl text-gray-400 mb-4"></i>
+          <p className="text-gray-600">No customers found</p>
+          <p className="text-sm text-gray-500 mt-2">Add your first customer to get started</p>
+        </div>
       </div>
     );
   }
@@ -279,7 +314,7 @@ function CustomersTab({ searchTerm, selectedFilter, onView, customers, loading }
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {filteredCustomers.map((customer) => (
+          {filteredCustomers.map((customer: any) => (
             <tr key={customer.id} className="hover:bg-gray-50">
               <td className="px-4 py-3">
                 <div className="flex items-center">
@@ -627,7 +662,7 @@ function ActivitiesTab({ searchTerm, selectedFilter, onView }: any) {
 }
 
 // Add Form Component
-function AddForm({ activeTab, onClose }: any) {
+function AddForm({ activeTab, customers, onClose }: any) {
   return (
     <div className="space-y-4">
       {activeTab === 'customers' && (
@@ -698,7 +733,7 @@ function AddForm({ activeTab, onClose }: any) {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
               <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8">
-                {customers.map(customer => (
+                {customers.map((customer: any) => (
                   <option key={customer.id} value={customer.id}>{customer.name}</option>
                 ))}
               </select>
@@ -738,7 +773,7 @@ function AddForm({ activeTab, onClose }: any) {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
               <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8">
-                {customers.map(customer => (
+                {customers.map((customer: any) => (
                   <option key={customer.id} value={customer.id}>{customer.name}</option>
                 ))}
               </select>

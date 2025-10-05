@@ -1,11 +1,15 @@
 
 import { useState } from 'react';
-import { stockMovements, warehouses, locations } from '../../../mocks/inventory';
+import { useStockMovements } from '../../../hooks/useDatabase';
+import { warehouses, locations } from '../../../mocks/inventory';
 import Button from '../../../components/base/Button';
 import Input from '../../../components/base/Input';
 import Modal from '../../../components/base/Modal';
 
 export default function StockMovements() {
+  // Database hooks for real-time data
+  const { stockMovements } = useStockMovements();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('all');
   const [selectedWarehouse, setSelectedWarehouse] = useState('all');

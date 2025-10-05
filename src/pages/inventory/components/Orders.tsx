@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useOrders, useProducts, useCustomers } from '../../../hooks/useDatabase';
+import { useOrders, useProducts, useProductVariants } from '../../../hooks/useDatabase';
 import { warehouses, locations } from '../../../mocks/inventory';
 import { useCurrency } from '../../../hooks/useCurrency';
 import Button from '../../../components/base/Button';
@@ -28,9 +28,9 @@ interface NewOrder {
 
 export default function Orders() {
   // Database hooks for real-time data
-  const { orders, loading: ordersLoading, addOrder } = useOrders();
+  const { orders, loading: ordersLoading } = useOrders();
   const { products } = useProducts();
-  const { customers } = useCustomers();
+  const { variants: productVariants } = useProductVariants();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
@@ -148,8 +148,11 @@ export default function Orders() {
     const variant = productVariants.find(v => v.id === variantId);
     if (variant) {
       updateOrderItem(index, 'variantId', variantId);
-      updateOrderItem(index, 'variantName', variant.name);
-      updateOrderItem(index, 'price', variant.price);
+      updateOrderItem(index, 'variantName', `${variant.variant_name}: ${variant.variant_value}`);
+      // Calculate price with adjustment from base product price
+      const product = products.find(p => p.id === variant.product_id);
+      const finalPrice = product ? product.price + (variant.price_adjustment || 0) : variant.price_adjustment || 0;
+      updateOrderItem(index, 'price', finalPrice);
       // Clear location selection when variant changes
       updateOrderItem(index, 'warehouseId', undefined);
       updateOrderItem(index, 'locationId', undefined);
@@ -163,14 +166,18 @@ export default function Orders() {
   };
 
   const getProductVariants = (productName: string) => {
-    return productVariants.filter(variant => variant.parentProduct === productName);
+    const product = products.find(p => p.name === productName);
+    return product ? productVariants.filter(variant => variant.product_id === product.id) : [];
   };
 
   const getAvailableLocations = (productName: string, variantId?: number) => {
     if (variantId) {
       const variant = productVariants.find(v => v.id === variantId);
       if (variant) {
-        return locations.filter(l => l.productSku === variant.sku && l.currentStock > 0);
+        // For variants, we need to construct the full SKU (base product SKU + variant suffix)
+        const product = products.find(p => p.id === variant.product_id);
+        const fullSku = product ? `${product.sku}${variant.sku_suffix || ''}` : variant.sku_suffix;
+        return locations.filter(l => l.productSku === fullSku && l.currentStock > 0);
       }
     }
     return locations.filter(l => l.productName === productName && l.currentStock > 0);
@@ -302,7 +309,7 @@ export default function Orders() {
           <div>
             <select
               value={displayCurrency}
-              onChange={(e) => {/* Handle currency change */}}
+              onChange={() => {/* Handle currency change */}}
               className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"
             >
               {availableCurrencies.map(currency => (
@@ -576,11 +583,15 @@ export default function Orders() {
                             className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"
                           >
                             <option value="">Select Variant</option>
-                            {selectedProductVariants.map(variant => (
-                              <option key={variant.id} value={variant.id}>
-                                {variant.name} - ${variant.price}
-                              </option>
-                            ))}
+                            {selectedProductVariants.map(variant => {
+                              const product = products.find(p => p.id === variant.product_id);
+                              const finalPrice = product ? product.price + (variant.price_adjustment || 0) : variant.price_adjustment || 0;
+                              return (
+                                <option key={variant.id} value={variant.id}>
+                                  {variant.variant_name}: {variant.variant_value} - ${finalPrice.toFixed(2)}
+                                </option>
+                              );
+                            })}
                           </select>
                         </div>
                       )}
