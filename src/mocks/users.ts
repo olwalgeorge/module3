@@ -1,0 +1,260 @@
+export const users = [
+  {
+    id: 1,
+    name: 'John Smith',
+    email: 'john.smith@company.com',
+    phone: '+1 (555) 123-4567',
+    avatar: 'https://readdy.ai/api/search-image?query=Professional%20business%20man%20in%20suit%20with%20confident%20smile%2C%20corporate%20headshot%20style%2C%20clean%20white%20background%2C%20modern%20professional%20photography&width=400&height=400&seq=user1&orientation=squarish',
+    role: 'Administrator',
+    department: 'IT',
+    status: 'Active',
+    lastLogin: '2024-01-15T10:30:00Z',
+    createdAt: '2023-06-15T08:00:00Z',
+    permissions: ['all'],
+    location: 'New York, NY',
+    employeeId: 'EMP001',
+    manager: 'Sarah Johnson',
+    salary: 85000,
+    hireDate: '2023-06-15',
+    notes: 'System administrator with full access to all modules. Responsible for user management and system maintenance.'
+  },
+  {
+    id: 2,
+    name: 'Sarah Johnson',
+    email: 'sarah.johnson@company.com',
+    phone: '+1 (555) 234-5678',
+    avatar: 'https://readdy.ai/api/search-image?query=Professional%20business%20woman%20with%20friendly%20smile%2C%20corporate%20headshot%20style%2C%20clean%20white%20background%2C%20modern%20professional%20photography&width=400&height=400&seq=user2&orientation=squarish',
+    role: 'Manager',
+    department: 'Operations',
+    status: 'Active',
+    lastLogin: '2024-01-15T09:15:00Z',
+    createdAt: '2023-05-10T08:00:00Z',
+    permissions: ['dashboard', 'products', 'orders', 'reports', 'crm'],
+    location: 'New York, NY',
+    employeeId: 'EMP002',
+    manager: 'John Smith',
+    salary: 75000,
+    hireDate: '2023-05-10',
+    notes: 'Operations manager overseeing daily inventory operations and customer relationships.'
+  },
+  {
+    id: 3,
+    name: 'Mike Chen',
+    email: 'mike.chen@company.com',
+    phone: '+1 (555) 345-6789',
+    avatar: 'https://readdy.ai/api/search-image?query=Professional%20Asian%20business%20man%20with%20glasses%20and%20suit%2C%20corporate%20headshot%20style%2C%20clean%20white%20background%2C%20modern%20professional%20photography&width=400&height=400&seq=user3&orientation=squarish',
+    role: 'Warehouse Staff',
+    department: 'Warehouse',
+    status: 'Active',
+    lastLogin: '2024-01-15T08:45:00Z',
+    createdAt: '2023-08-20T08:00:00Z',
+    permissions: ['products', 'movements', 'warehouses'],
+    location: 'Los Angeles, CA',
+    employeeId: 'EMP003',
+    manager: 'Sarah Johnson',
+    salary: 45000,
+    hireDate: '2023-08-20',
+    notes: 'Warehouse operations specialist handling stock movements and inventory tracking.'
+  },
+  {
+    id: 4,
+    name: 'Emily Davis',
+    email: 'emily.davis@company.com',
+    phone: '+1 (555) 456-7890',
+    avatar: 'https://readdy.ai/api/search-image?query=Professional%20business%20woman%20with%20blonde%20hair%20and%20professional%20attire%2C%20corporate%20headshot%20style%2C%20clean%20white%20background%2C%20modern%20professional%20photography&width=400&height=400&seq=user4&orientation=squarish',
+    role: 'Sales Representative',
+    department: 'Sales',
+    status: 'Active',
+    lastLogin: '2024-01-15T11:20:00Z',
+    createdAt: '2023-07-05T08:00:00Z',
+    permissions: ['crm', 'orders', 'customers'],
+    location: 'Chicago, IL',
+    employeeId: 'EMP004',
+    manager: 'Sarah Johnson',
+    salary: 55000,
+    hireDate: '2023-07-05',
+    notes: 'Sales representative focused on customer relationship management and order processing.'
+  },
+  {
+    id: 5,
+    name: 'David Wilson',
+    email: 'david.wilson@company.com',
+    phone: '+1 (555) 567-8901',
+    avatar: 'https://readdy.ai/api/search-image?query=Professional%20business%20man%20with%20beard%20and%20suit%2C%20corporate%20headshot%20style%2C%20clean%20white%20background%2C%20modern%20professional%20photography&width=400&height=400&seq=user5&orientation=squarish',
+    role: 'Accountant',
+    department: 'Finance',
+    status: 'Active',
+    lastLogin: '2024-01-15T07:30:00Z',
+    createdAt: '2023-09-12T08:00:00Z',
+    permissions: ['accounting', 'reports', 'purchases'],
+    location: 'New York, NY',
+    employeeId: 'EMP005',
+    manager: 'Sarah Johnson',
+    salary: 65000,
+    hireDate: '2023-09-12',
+    notes: 'Financial analyst handling accounting operations, tax management, and financial reporting.'
+  },
+  {
+    id: 6,
+    name: 'Lisa Rodriguez',
+    email: 'lisa.rodriguez@company.com',
+    phone: '+1 (555) 678-9012',
+    avatar: 'https://readdy.ai/api/search-image?query=Professional%20Hispanic%20business%20woman%20with%20dark%20hair%20and%20professional%20attire%2C%20corporate%20headshot%20style%2C%20clean%20white%20background%2C%20modern%20professional%20photography&width=400&height=400&seq=user6&orientation=squarish',
+    role: 'Purchasing Agent',
+    department: 'Procurement',
+    status: 'Active',
+    lastLogin: '2024-01-14T16:45:00Z',
+    createdAt: '2023-10-08T08:00:00Z',
+    permissions: ['purchases', 'suppliers', 'products'],
+    location: 'Miami, FL',
+    employeeId: 'EMP006',
+    manager: 'Sarah Johnson',
+    salary: 58000,
+    hireDate: '2023-10-08',
+    notes: 'Procurement specialist managing supplier relationships and purchase order processing.'
+  },
+  {
+    id: 7,
+    name: 'Robert Taylor',
+    email: 'robert.taylor@company.com',
+    phone: '+1 (555) 789-0123',
+    avatar: 'https://readdy.ai/api/search-image?query=Professional%20business%20man%20with%20gray%20hair%20and%20suit%2C%20corporate%20headshot%20style%2C%20clean%20white%20background%2C%20modern%20professional%20photography&width=400&height=400&seq=user7&orientation=squarish',
+    role: 'Quality Control',
+    department: 'Quality',
+    status: 'Inactive',
+    lastLogin: '2024-01-10T14:20:00Z',
+    createdAt: '2023-04-18T08:00:00Z',
+    permissions: ['products', 'reports'],
+    location: 'Dallas, TX',
+    employeeId: 'EMP007',
+    manager: 'Sarah Johnson',
+    salary: 52000,
+    hireDate: '2023-04-18',
+    notes: 'Quality control specialist ensuring product standards and compliance. Currently on leave.'
+  },
+  {
+    id: 8,
+    name: 'Jennifer Brown',
+    email: 'jennifer.brown@company.com',
+    phone: '+1 (555) 890-1234',
+    avatar: 'https://readdy.ai/api/search-image?query=Professional%20business%20woman%20with%20brown%20hair%20and%20professional%20attire%2C%20corporate%20headshot%20style%2C%20clean%20white%20background%2C%20modern%20professional%20photography&width=400&height=400&seq=user8&orientation=squarish',
+    role: 'Customer Service',
+    department: 'Support',
+    status: 'Active',
+    lastLogin: '2024-01-15T12:10:00Z',
+    createdAt: '2023-11-22T08:00:00Z',
+    permissions: ['crm', 'orders'],
+    location: 'Seattle, WA',
+    employeeId: 'EMP008',
+    manager: 'Emily Davis',
+    salary: 42000,
+    hireDate: '2023-11-22',
+    notes: 'Customer service representative handling customer inquiries and order support.'
+  }
+];
+
+export const roles = [
+  {
+    id: 1,
+    name: 'Administrator',
+    description: 'Full system access with all permissions',
+    permissions: ['all'],
+    userCount: 1,
+    color: 'red'
+  },
+  {
+    id: 2,
+    name: 'Manager',
+    description: 'Management level access to operations and reporting',
+    permissions: ['dashboard', 'products', 'orders', 'reports', 'crm', 'accounting'],
+    userCount: 1,
+    color: 'blue'
+  },
+  {
+    id: 3,
+    name: 'Warehouse Staff',
+    description: 'Access to inventory and warehouse operations',
+    permissions: ['products', 'movements', 'warehouses'],
+    userCount: 1,
+    color: 'green'
+  },
+  {
+    id: 4,
+    name: 'Sales Representative',
+    description: 'Access to customer management and sales operations',
+    permissions: ['crm', 'orders', 'customers'],
+    userCount: 1,
+    color: 'purple'
+  },
+  {
+    id: 5,
+    name: 'Accountant',
+    description: 'Access to financial and accounting operations',
+    permissions: ['accounting', 'reports', 'purchases'],
+    userCount: 1,
+    color: 'yellow'
+  },
+  {
+    id: 6,
+    name: 'Purchasing Agent',
+    description: 'Access to procurement and supplier management',
+    permissions: ['purchases', 'suppliers', 'products'],
+    userCount: 1,
+    color: 'indigo'
+  },
+  {
+    id: 7,
+    name: 'Quality Control',
+    description: 'Access to product quality and compliance',
+    permissions: ['products', 'reports'],
+    userCount: 1,
+    color: 'pink'
+  },
+  {
+    id: 8,
+    name: 'Customer Service',
+    description: 'Access to customer support operations',
+    permissions: ['crm', 'orders'],
+    userCount: 1,
+    color: 'orange'
+  }
+];
+
+export const departments = [
+  { id: 1, name: 'IT', userCount: 1, manager: 'John Smith' },
+  { id: 2, name: 'Operations', userCount: 1, manager: 'Sarah Johnson' },
+  { id: 3, name: 'Warehouse', userCount: 1, manager: 'Mike Chen' },
+  { id: 4, name: 'Sales', userCount: 1, manager: 'Emily Davis' },
+  { id: 5, name: 'Finance', userCount: 1, manager: 'David Wilson' },
+  { id: 6, name: 'Procurement', userCount: 1, manager: 'Lisa Rodriguez' },
+  { id: 7, name: 'Quality', userCount: 1, manager: 'Robert Taylor' },
+  { id: 8, name: 'Support', userCount: 1, manager: 'Jennifer Brown' }
+];
+
+export const userStats = {
+  totalUsers: 8,
+  activeUsers: 7,
+  inactiveUsers: 1,
+  newUsersThisMonth: 2,
+  totalRoles: 8,
+  totalDepartments: 8,
+  averageLoginFrequency: 4.2,
+  lastUserAdded: '2023-11-22'
+};
+
+export const permissions = [
+  { id: 'dashboard', name: 'Dashboard', description: 'View system overview and analytics' },
+  { id: 'products', name: 'Products', description: 'Manage inventory products and items' },
+  { id: 'orders', name: 'Orders', description: 'Process and manage customer orders' },
+  { id: 'purchases', name: 'Purchases', description: 'Handle purchase orders and procurement' },
+  { id: 'accounting', name: 'Accounting', description: 'Access financial and accounting features' },
+  { id: 'crm', name: 'CRM', description: 'Manage customer relationships and leads' },
+  { id: 'suppliers', name: 'Suppliers', description: 'Manage supplier relationships' },
+  { id: 'warehouses', name: 'Warehouses', description: 'Manage warehouse operations' },
+  { id: 'categories', name: 'Categories', description: 'Organize product categories' },
+  { id: 'movements', name: 'Stock Movements', description: 'Track inventory movements' },
+  { id: 'reports', name: 'Reports', description: 'Generate and view reports' },
+  { id: 'settings', name: 'Settings', description: 'Configure system settings' },
+  { id: 'users', name: 'User Management', description: 'Manage users and permissions' },
+  { id: 'all', name: 'All Permissions', description: 'Full system access' }
+];
