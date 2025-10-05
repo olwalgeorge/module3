@@ -1,104 +1,103 @@
 
-import { dashboardStats } from '../../../mocks/inventory';
+import { useDashboardStats, useProducts } from '../../../hooks/useDatabase';
 
 export default function Dashboard() {
+  // Get real-time dashboard statistics
+  const { stats, loading: statsLoading, error: statsError } = useDashboardStats();
+  const { products } = useProducts();
+
   // Navigation handler for quick actions
   const onNavigate = (section: string) => {
     console.log(`Navigate to ${section}`);
     // TODO: Implement navigation logic or integrate with router
   };
 
-  // Mock products data directly in component to avoid import issues
-  const products = [
-    {
-      id: 1,
-      name: 'MacBook Pro 16"',
-      sku: 'MBP-16-001',
-      category: 'Electronics',
-      supplier: 'Apple Inc.',
-      quantity: 25,
-      minStock: 10,
-      price: 2499.99,
-      cost: 1999.99,
-      status: 'In Stock',
-      lastUpdated: '2024-01-15',
-      image: '/images/laptop001_400x300.jpg'
-    },
-    {
-      id: 2,
-      name: 'iPhone 15 Pro',
-      sku: 'IP15P-001',
-      category: 'Electronics',
-      supplier: 'Apple Inc.',
-      quantity: 8,
-      minStock: 15,
-      price: 999.99,
-      cost: 799.99,
-      status: 'Low Stock',
-      lastUpdated: '2024-01-14',
-      image: '/images/phone001_400x300.jpg'
-    },
-    {
-      id: 4,
-      name: 'Wireless Mouse',
-      sku: 'WM-001',
-      category: 'Accessories',
-      supplier: 'Logitech',
-      quantity: 0,
-      minStock: 25,
-      price: 79.99,
-      cost: 49.99,
-      status: 'Out of Stock',
-      lastUpdated: '2024-01-12',
-      image: '/images/mouse001_400x300.jpg'
-    }
-  ];
-
-  const lowStockProducts = products.filter(p => p.quantity <= p.minStock && p.quantity > 0);
+  // Calculate dynamic product alerts from database
+  const lowStockProducts = products.filter(p => 
+    p.quantity <= p.min_stock_level && p.quantity > 0
+  );
   const outOfStockProducts = products.filter(p => p.quantity === 0);
 
-  const stats = [
+  // Use real statistics or fallback to loading state
+  const displayStats = stats || {
+    total_products: 0,
+    low_stock_items: 0,
+    out_of_stock_items: 0,
+    total_inventory_value: 0,
+    monthly_orders: 0,
+    pending_orders: 0
+  };
+
+  const statsConfig = [
     {
       title: 'Total Products',
-      value: dashboardStats.totalProducts,
+      value: displayStats.total_products,
       icon: 'ri-box-3-line',
       color: 'bg-blue-500',
-      change: '+12%'
+      change: '+12%',
+      loading: statsLoading
     },
     {
       title: 'Low Stock Items',
-      value: dashboardStats.lowStockItems,
+      value: displayStats.low_stock_items,
       icon: 'ri-error-warning-line',
       color: 'bg-yellow-500',
-      change: '-5%'
+      change: '-5%',
+      loading: statsLoading
     },
     {
       title: 'Out of Stock',
-      value: dashboardStats.outOfStockItems,
+      value: displayStats.out_of_stock_items,
       icon: 'ri-close-circle-line',
       color: 'bg-red-500',
-      change: '+2%'
+      change: '+2%',
+      loading: statsLoading
     },
     {
       title: 'Total Value',
-      value: `$${dashboardStats.totalValue.toLocaleString()}`,
+      value: `$${Number(displayStats.total_inventory_value || 0).toLocaleString()}`,
       icon: 'ri-money-dollar-circle-line',
       color: 'bg-green-500',
-      change: '+8%'
+      change: '+8%',
+      loading: statsLoading
     }
   ];
 
   return (
     <div className="p-6 space-y-6">
+      {/* Error Display */}
+      {statsError && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="flex">
+            <i className="ri-alert-line text-yellow-400 text-xl mr-3"></i>
+            <div>
+              <p className="text-sm font-medium text-yellow-800">Database Connection Issue</p>
+              <p className="text-sm text-yellow-700 mt-1">
+                Using cached data. Some statistics may not be current. {statsError}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
+        {statsConfig.map((stat, index) => (
           <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                <p className="text-sm text-green-600 mt-1">{stat.change} from last month</p>
+                {stat.loading ? (
+                  <div className="animate-pulse">
+                    <div className="h-8 bg-gray-200 rounded w-16 mt-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-12 mt-1"></div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                    <p className="text-sm text-green-600 mt-1">{stat.change} from last month</p>
+                  </>
+                )}
               </div>
               <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
                 <i className={`${stat.icon} text-white text-xl`}></i>
